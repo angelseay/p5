@@ -22,7 +22,10 @@ var title = videoPlayer.append("h1")
 var playButton = videoPlayer.append("polygon")
   .attr("id", "playButton")
   .attr("points", "380,450 380,470 400,460 ")
-  .style("fill", "white");
+  .style("fill", "white")
+  .on("click", function(d,i){
+    console.log("test");
+  });
 
 var forwardButton = videoPlayer.append("g")
   .attr("id", "forwardButton");
@@ -32,16 +35,23 @@ forwardButton.append("polygon")
 forwardButton.append("polygon")
   .attr("points", "500,455 500,465 510,460")
   .style("fill", "white");
+forwardButton.on("click", function(d,i){
+  console.log("test");
+  });
 
 
 var rewindButton = videoPlayer.append("g")
-    .attr("id", "rewindButton");
-  rewindButton.append("polygon")
-    .attr("points", "280,455 280,465 270,460")
-    .style("fill", "white");
-  rewindButton.append("polygon")
-    .attr("points", "270,455 270,465 260,460")
-    .style("fill", "white");
+  .attr("id", "rewindButton");
+rewindButton.append("polygon")
+  .attr("points", "280,455 280,465 270,460")
+  .style("fill", "white");
+rewindButton.append("polygon")
+  .attr("points", "270,455 270,465 260,460")
+  .style("fill", "white");
+rewindButton.on("click", function(d,i){
+    console.log("test");
+});
+
 d3.csv("movies.csv",function(data) {
   data.forEach(function(d) {
     d.color = d.color,
@@ -77,6 +87,23 @@ d3.csv("movies.csv",function(data) {
     d.aspect_ratio = +d.aspect_ratio,
     d.movie_facebook_likes = +d.movie_facebook_likes
   });
+  console.log(data[0]);
+  var titlesByYear = d3.nest()
+.key(function(d) { return d.title_year; })
+.key(function(d) { return d.movie_title; })
+.entries(data);
+// console.log(JSON.stringify(titlesByYear));
+console.log(titlesByYear);
+
+var years = videoPlayer.selectAll(".year")
+    .data(titlesByYear)
+    .enter()
+    .append("g")
+    .attr("id", function(d) {
+      return d.key;
+    });
+
+
 //   videoPlayer.selectAll('circle')
 // .data(data)
 // .enter()
