@@ -88,42 +88,42 @@ d3.csv("movies.csv",function(data) {
     d.movie_facebook_likes = +d.movie_facebook_likes
   });
   console.log(data[0]);
-  var titlesByYear = d3.nest()
+
+// attempting to reorganize data
+var titlesByYear = d3.nest()
 .key(function(d) { return d.title_year; })
 .key(function(d) { return d.movie_title; })
 .entries(data);
 // console.log(JSON.stringify(titlesByYear));
 console.log(titlesByYear);
 
-var years = videoPlayer.selectAll(".year")
-    .data(titlesByYear)
+var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+// simply adding every movie (not grouped by year)
+var years = videoPlayer.selectAll('circle')
+    .data(data)
     .enter()
-    .append("g")
-    .attr("id", function(d) {
+    .append('g')
+    .attr('id', function(d) {
       return d.key;
     });
 
+    // the placements are arbitrary
+    years.append('circle')
+    .attr('cx', function(d) {
+      return d.imdb_score*50;
+    })
+    .attr('cy', function(d) {
+      return d.imdb_score*50;
+    })
+    .attr("fill",function(d,i){return colors(i);})
+    .attr('r', function(d) {
+      return d.imdb_score*10;
+    })
+    .attr('id', function(d) {
+      return d.movie_title;
+    });
 
-//   videoPlayer.selectAll('circle')
-// .data(data)
-// .enter()
-// .append('g');
-//
-// videoPlayer.append("circle")
-//   // .attr('x', function(d) {
-//   //   return regionScale(d.key);
-//   // })
-//   // .attr('y', function(d) {
-//   //   return salesScale(d.value);
-//   // })
-//   .attr('cx', function(d) {
-//     return d.imdb_score*10;
-//   })
-//   .attr('cy', function(d) {
-//     return d.imdb_score*10;
-//   });
-//   // .style('fill',function(d, i ) {
-//   //   return colors(i);
-//   // });
-//
+    
 });
