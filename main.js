@@ -16,7 +16,7 @@ var title = videoPlayer.append("h1")
     .attr("y", 400)
     .attr("font-size", "20px")
     .style("fill", "white")
-    .attr("text", "Analyzing Data or whatever");
+    .attr("text", "Analyzing Data");
 
 
 var playButton = videoPlayer.append("polygon")
@@ -68,14 +68,13 @@ d3.csv("movies.csv",function(data) {
     d.actor_2_facebook_likes = +d.actor_2_facebook_likes,
     d.actor_3_facebook_likes = +d.actor_3_facebook_likes,
 
-
     d.gross = +d.gross,
-    d.genres = d.genres, //not sure about this one
+    d.genres = d.genres,
     d.movie_title = d.movie_title,
     d.num_voted_users = +d.num_voted_users,
     d.cast_total_facebook_likes = +d.cast_total_facebook_likes,
     d.facenumber_in_poster = +d.facenumber_in_poster,
-    d.plot_keywords =+d.plot_keywords, // not sure about this one
+    d.plot_keywords = d.plot_keywords,
     d.movie_imdb_link = d.movie_imdb_link,
     d.num_user_for_reviews = +d.num_user_for_reviews,
     d.language = d.language,
@@ -118,8 +117,8 @@ var toolTip = d3.tip()
 var svg = d3.select('svg');
 svg.call(toolTip);
 
-// simply adding every movie (not grouped by year)
-var years = videoPlayer.selectAll('circle')
+// adds every movie in 2010
+var movies2010 = videoPlayer.selectAll('circle')
     .data(data)
     .enter()
     .append('g')
@@ -128,7 +127,10 @@ var years = videoPlayer.selectAll('circle')
     });
 
     // the placements are arbitrary
-    years.append('circle')
+    movies2010.append('circle')
+    .filter(function(d) {
+      return d.title_year == 2010;
+    })
     .attr('cx', function(d) {
       return d.imdb_score*50;
     })
