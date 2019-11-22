@@ -99,6 +99,24 @@ console.log(titlesByYear);
 
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
 
+// adds a tooltip
+var toolTip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-12, 0])
+    .html(function (d) {
+      var htmlString = `<h5>${d['movie_title']} (${d['title_year']})</h5>`;
+      htmlString = htmlString + `<table> <tr> <th>Rating: </th> <th>Genres: </th>
+        <th>Duration: </th> <th>IMDB Score: </th> <th>Director: </th>
+        <th>Actors: </th>`;
+      htmlString = htmlString + `<tbody> <tr> <th>${d['content_rating']}</th>
+        <th>${d['genres']}</th> <th>${d['duration']}</th> <th>${d['imdb_score']}
+        </th> <th>${d['director_name']}</th> <th>${d['actor_1_name'], d['actor_2_name'],
+        d['actor_3_name']}</th> </tr> </tbody> </table>`
+      return htmlString;
+    })
+
+var svg = d3.select('svg');
+svg.call(toolTip);
 
 // simply adding every movie (not grouped by year)
 var years = videoPlayer.selectAll('circle')
@@ -123,7 +141,8 @@ var years = videoPlayer.selectAll('circle')
     })
     .attr('id', function(d) {
       return d.movie_title;
-    });
+    })
+    .on('mouseover', toolTip.show)
+    .on('mouseout', toolTip.hide);
 
-    
 });
