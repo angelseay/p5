@@ -252,17 +252,14 @@ var movies = svg.selectAll('circle')
         .style('right', '10px');
 
     function fastForwardMovies() {
-      if (year == 2016) {
+      if (year == 2015) {
         forwardButton.style('display', 'none');
-        alert("The range of movie years is only from 2010 - 2016");
       }
 
       movies.selectAll('circle')
         .style('display', 'none');
 
-      if (year < 2016) {
-        year++;
-      }
+      year++;
 
       if (year > 2010) {
         rewindButton.style('display', 'block');
@@ -282,17 +279,14 @@ var movies = svg.selectAll('circle')
     }
 
     function rewindMovies() {
-      if (year == 2010) {
+      if (year == 2011) {
         rewindButton.style('display', 'none');
-        alert("The range of movie years is only from 2010 - 2016");
       }
 
       movies.selectAll('circle')
         .style('display', 'none');
 
-      if (year > 2010) {
-        year--;
-      }
+      year--;
 
       if (year < 2016) {
         forwardButton.style('display', 'block');
@@ -320,7 +314,9 @@ var movies = svg.selectAll('circle')
         .attr("points", "500,455 500,465 510,460")
         .style("fill", "white");
       forwardButton.on("click", function(d,i){
-        fastForwardMovies();
+        if (year < 2016) {
+          fastForwardMovies();
+        }
       });
 
     var rewindButton = svg.append("g")
@@ -332,7 +328,9 @@ var movies = svg.selectAll('circle')
         .attr("points", "270,455 270,465 260,460")
         .style("fill", "white");
       rewindButton.on("click", function(d,i){
-        rewindMovies();
+        if (year > 2010) {
+          rewindMovies();
+        }
       });
 
 });
