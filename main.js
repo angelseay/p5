@@ -2,16 +2,16 @@ var width = 800;
 var height= 500;
 
 //Create SVGs for background
-var videoPlayer = d3.select("#videoPlayer")
+var svg = d3.select("#videoPlayer")
   .append("svg:svg")
   .attr("width",width)
   .attr("height",height)
 
-videoPlayer.append("rect")
+svg.append("rect")
   .attr("width",width)
   .attr("height",height);
 
-var title = videoPlayer.append("h1")
+var title = svg.append("h1")
     .attr("x", 200)
     .attr("y", 400)
     .attr("font-size", "20px")
@@ -19,7 +19,7 @@ var title = videoPlayer.append("h1")
     .attr("text", "Analyzing Data");
 
 
-var playButton = videoPlayer.append("polygon")
+var playButton = svg.append("polygon")
   .attr("id", "playButton")
   .attr("points", "380,450 380,470 400,460 ")
   .style("fill", "white")
@@ -27,7 +27,7 @@ var playButton = videoPlayer.append("polygon")
     console.log("test");
   });
 
-var forwardButton = videoPlayer.append("g")
+var forwardButton = svg.append("g")
   .attr("id", "forwardButton");
 forwardButton.append("polygon")
   .attr("points", "490,455 490,465 500,460")
@@ -40,7 +40,7 @@ forwardButton.on("click", function(d,i){
   });
 
 
-var rewindButton = videoPlayer.append("g")
+var rewindButton = svg.append("g")
   .attr("id", "rewindButton");
 rewindButton.append("polygon")
   .attr("points", "280,455 280,465 270,460")
@@ -114,11 +114,10 @@ var toolTip = d3.tip()
       return htmlString;
     })
 
-var svg = d3.select('svg');
 svg.call(toolTip);
 
 // adds every movie in 2010
-var movies2010 = videoPlayer.selectAll('circle')
+var movies2010 = svg.selectAll('circle')
     .data(data)
     .enter()
     .append('g')
@@ -147,4 +146,68 @@ var movies2010 = videoPlayer.selectAll('circle')
     .on('mouseover', toolTip.show)
     .on('mouseout', toolTip.hide);
 
+    // append text describing the drop down menu
+    d3.select(videoPlayer)
+        .append('g')
+        .append('text')
+        .text('Filter by Genre: ')
+        .style('padding-left', '5px');
+
+    var genres = ["Action", "Adventure", "Animation", "Biography", "Comedy",
+    "Crime", "Documentary", "Drama", "Family", "Fantasy", "Game-Show", "History",
+    "Horror", "Music", "Musical", "Mystery", "Reality-TV", "Romance", "Sci-Fi",
+    "Sport", "Thriller", "War", "Western"];
+
+    // creates a drop-down menu to filter the movies by genre
+    d3.select(videoPlayer)
+        .append('g')
+        .append('select')
+        .attr('id', 'drop-down')
+        .attr('size', 5)
+        .style("border", "1px solid black")
+        .selectAll('option')
+        .data(genres)
+        .enter()
+        .append('option')
+        .attr('value', function (d) {
+          return d;
+        })
+        .text(function (d) {
+          return d;
+        });
+
+    // creates a 'filter' button
+    d3.select(videoPlayer)
+        .append('g')
+        .append('button')
+        .style("border", "1px solid black")
+        .text('Submit')
+        .on('click', function() {
+
+            var menu = document.getElementById('drop-down');
+            var genre = menu.options[menu.selectedIndex].value;
+            console.log(genre);
+
+            // hides movies whose genre does not match the selected genre
+            movies2010.selectAll('circle')
+                .filter(function (d) {
+                    return (d.genres.search(genre)) == -1;
+                })
+                .transition()
+                .duration(600)
+                .delay(600)
+                .attr('r', 0); // hidden through setting radius to 0
+
+            // shows all movies whose genre match the selected genre
+            movies2010.selectAll('circle')
+                .filter(function (d) {
+                  return (d.genres.search(genre)) > -1;
+                })
+                .transition()
+                .duration(600)
+                .delay(600)
+                .attr('r', function (d) {
+                  return d.imdb_score*10;
+                });
+        });
 });
