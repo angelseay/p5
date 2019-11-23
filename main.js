@@ -151,7 +151,8 @@ var movies2010 = svg.selectAll('circle')
         .append('g')
         .append('text')
         .text('Filter by Genre: ')
-        .style('padding-left', '5px');
+        .style('position', 'relative')
+        .style('left', '80px');
 
     var genres = ["Action", "Adventure", "Animation", "Biography", "Comedy",
     "Crime", "Documentary", "Drama", "Family", "Fantasy", "Game-Show", "History",
@@ -165,6 +166,9 @@ var movies2010 = svg.selectAll('circle')
         .attr('id', 'drop-down')
         .attr('size', 5)
         .style("border", "1px solid black")
+        .style('position', 'relative')
+        .style('left', '82px')
+        .style('bottom', '2px')
         .selectAll('option')
         .data(genres)
         .enter()
@@ -181,12 +185,14 @@ var movies2010 = svg.selectAll('circle')
         .append('g')
         .append('button')
         .style("border", "1px solid black")
+        .style('position', 'relative')
+        .style('left', '90px')
+        .style('bottom', '4px')
         .text('Submit')
         .on('click', function() {
 
             var menu = document.getElementById('drop-down');
             var genre = menu.options[menu.selectedIndex].value;
-            console.log(genre);
 
             // hides movies whose genre does not match the selected genre
             movies2010.selectAll('circle')
