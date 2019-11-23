@@ -186,6 +186,7 @@ var movies2010 = svg.selectAll('circle')
         .append('g')
         .append('select')
         .attr('id', 'drop-down')
+        .attr('multiple', 'true')
         .attr('size', 5)
         .style("border", "1px solid black")
         .style('position', 'relative')
@@ -214,12 +215,29 @@ var movies2010 = svg.selectAll('circle')
         .on('click', function() {
 
             var menu = document.getElementById('drop-down');
-            var genre = menu.options[menu.selectedIndex].value;
+            var genre = [];
+            for (var i = 0; i < menu.length; i++) {
+              if (menu.options[i].selected) {
+                genre.push(menu.options[i].value);
+              }
+            }
 
             // hides movies whose genre does not match the selected genre
             movies2010.selectAll('circle')
                 .filter(function (d) {
-                    return (d.genres.search(genre)) == -1;
+                    var boolean = true;
+                    for (var i = 0; i < genre.length; i++) {
+
+                      if ((d.genres.includes(genre[i])) == false) {
+                        boolean = false;
+                        break;
+                      }
+                    }
+
+                    if (boolean == false) {
+                      console.log(d.genres);
+                      return d.genres;
+                    }
                 })
                 .transition()
                 .duration(600)
@@ -229,7 +247,18 @@ var movies2010 = svg.selectAll('circle')
             // shows all movies whose genre match the selected genre
             movies2010.selectAll('circle')
                 .filter(function (d) {
-                  return (d.genres.search(genre)) > -1;
+                  var boolean = true;
+                  for (var i = 0; i < genre.length; i++) {
+
+                      if ((d.genres.includes(genre[i])) == false) {
+                        boolean = false;
+                        break;
+                      }
+                  }
+
+                  if (boolean == true) {
+                      return d.genres;
+                  }
                 })
                 .transition()
                 .duration(600)
@@ -237,20 +266,14 @@ var movies2010 = svg.selectAll('circle')
                 .attr('r', function (d) {
                   return radiusScale(d.imdb_score);
                 });
-                simulation.nodes(datapoints)
-                  .on('tick', ticker)
+        });
 
-                function ticker() {
-                  movies2010
-                    .attr("cx", function(d){
-                      return d.x
-                     })
-                    .attr("cy", function(d){
-                      return d.y
-                    })
-                }
-
-                         });
-
-
+      // append text describing how to select multiple options from drop-down menu
+      d3.select(videoPlayer)
+        .append('g')
+        .append('text')
+        .text('Hold down the Ctrl (windows) / Command (Mac) button to select multiple options.')
+        .style('position', 'fixed')
+        .style('bottom', '75px')
+        .style('right', '10px');
 });
