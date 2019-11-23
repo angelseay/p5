@@ -1,6 +1,11 @@
 var width = 800;
 var height= 500;
 
+    var maxAmount = 10;
+    // defines the maximum values (domain) and maximum radius values (range) for our cirlces
+
+    var radiusScale = d3.scaleSqrt().domain([0, 10]).range([10, 80])
+
 //Create SVGs for background
 var svg = d3.select("#videoPlayer")
   .append("svg:svg")
@@ -51,8 +56,8 @@ rewindButton.append("polygon")
 rewindButton.on("click", function(d,i){
     console.log("test");
 });
-
 d3.csv("movies.csv",function(data) {
+  rawData = data;
   data.forEach(function(d) {
     d.color = d.color,
     d.director_name = d.director_name,
@@ -84,17 +89,14 @@ d3.csv("movies.csv",function(data) {
     d.title_year = +d.title_year,
     d.imdb_score = +d.imdb_score,
     d.aspect_ratio = +d.aspect_ratio,
-    d.movie_facebook_likes = +d.movie_facebook_likes
+    d.movie_facebook_likes = +d.movie_facebook_likes,
+    d.radius = radiusScale(+d.imdb_score)
   });
   console.log(data[0]);
 
-// attempting to reorganize data
-var titlesByYear = d3.nest()
-.key(function(d) { return d.title_year; })
-.key(function(d) { return d.movie_title; })
-.entries(data);
-// console.log(JSON.stringify(titlesByYear));
-console.log(titlesByYear);
+  // myNodes.sort(function (a, b) { return b.imdb_score - a.imdb_score; });
+
+
 
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -123,28 +125,48 @@ var movies2010 = svg.selectAll('circle')
     .append('g')
     .attr('id', function(d) {
       return d.key;
-    });
+  });
+
+
 
     // the placements are arbitrary
     movies2010.append('circle')
     .filter(function(d) {
       return d.title_year == 2010;
     })
-    .attr('cx', function(d) {
-      return d.imdb_score*50;
-    })
-    .attr('cy', function(d) {
-      return d.imdb_score*50;
-    })
     .attr("fill",function(d,i){return colors(i);})
+    .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
     .attr('r', function(d) {
-      return d.imdb_score*10;
-    })
-    .attr('id', function(d) {
-      return d.movie_title;
+      return d.radius;
     })
     .on('mouseover', toolTip.show)
     .on('mouseout', toolTip.hide);
+
+
+
+    var center = { x: width / 2, y: height / 2 };
+
+    // X locations of the ratings.
+     var ratingsX = {
+       "G": 160,
+       "PG": 2 * width /6,
+       "PG-13": width/2,
+       "R": 4 * width /6 ,
+       "Unrated": 5 * width /6 -160
+     };
+
+     var forceStrength = 0.01;
+
+
+
+    let simulation = d3.forceSimulation()
+      .force("x", d3.forceX(width /2).strength(0.02))
+      .force("y", d3.forceY(height /2).strength(0.02))
+      .force("collide", d3.forceCollide(function(d){
+        return radiusScale(d.imdb_score) + 1
+      }))
+
+
 
     // append text describing the drop down menu
     d3.select(videoPlayer)
@@ -213,7 +235,22 @@ var movies2010 = svg.selectAll('circle')
                 .duration(600)
                 .delay(600)
                 .attr('r', function (d) {
-                  return d.imdb_score*10;
+                  return radiusScale(d.imdb_score);
                 });
-        });
+                simulation.nodes(datapoints)
+                  .on('tick', ticker)
+
+                function ticker() {
+                  movies2010
+                    .attr("cx", function(d){
+                      return d.x
+                     })
+                    .attr("cy", function(d){
+                      return d.y
+                    })
+                }
+
+                         });
+
+
 });
