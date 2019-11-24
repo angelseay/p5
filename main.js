@@ -263,7 +263,6 @@ var movies = svg.selectAll('circle')
                 .attr('r', function (d) {
                   return radiusScale(d.imdb_score);
                 });
-        });
 
       // append text describing how to select multiple options from drop-down menu
       d3.select(videoPlayer)
@@ -360,3 +359,4 @@ var movies = svg.selectAll('circle')
     if (year == 2010) {
       rewindButton.style('display', 'none');
     }
+  });
