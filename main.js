@@ -315,7 +315,7 @@ function updateCircles() {
         .append('g')
         .append('text')
         .attr('id', 'text')
-        .text('There were ' + numMovies[year.toString()] + ' movies made in ' + year + '.')
+        .text('There were ' + numMovies["$"+year.toString()] + ' movies made in ' + year + '.')
         .style('position', 'absolute')
         .style('top', '150px')
         .style('right', '180px');
@@ -324,12 +324,13 @@ function updateCircles() {
       numMovies = d3.nest()
         .key(function(d) { return d.title_year; })
         .rollup(function(v) { return v.length; })
-        .entries(data);
-      console.log(numMovies);
+        .map(data);
+        console.log(numMovies);
+        console.log(numMovies["$"+year.toString()]);
     }
 
     function addText() {
-      document.getElementById('text').innerHTML = 'There were ' + numMovies[year.toString()]
+      document.getElementById('text').innerHTML = 'There were ' + numMovies["$"+year.toString()]
         + ' movies made in ' + year + '.';
     }
 
