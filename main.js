@@ -4,7 +4,7 @@ var height= 500;
 var maxAmount = 10;
 // defines the maximum values (domain) and maximum radius values (range) for our cirlces
 
-var radiusScale = d3.scaleSqrt().domain([0, 10]).range([10, 80]);
+var radiusScale = d3.scaleLinear().domain([0, 10]).range([5, 80]);
 
 var year = 2010;
 
