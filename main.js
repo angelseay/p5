@@ -77,7 +77,7 @@ d3.csv("movies.csv",function(data) {
 
 
  let simulation = d3.forceSimulation()
-  .force("charge", d3.forceManyBody().strength(-75))
+  .force("charge", d3.forceManyBody().strength(-1))
   .alphaDecay(0)
    // .force("x", d3.forceX(width).strength(forceStrength))
    // .force("y", d3.forceY(height).strength(forceStrength))
@@ -87,6 +87,8 @@ d3.csv("movies.csv",function(data) {
       return radiusScale(d.imdb_score);
    })          // set your radius function
  );
+
+
 
 
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
@@ -118,7 +120,37 @@ var movies = svg.selectAll('circle')
       return d.key;
   });
 
+  var _zoom = d3.zoom()
+   .scaleExtent([.05, 8])
+   .on("zoom", function() {
+     movies.attr("transform", d3.event.transform);
+   });
+ svg.call(_zoom);
 
+ function phyllotaxis(radius) {
+   var theta = Math.PI * (3 - Math.sqrt(5));
+   return function(i) {
+     var r = radius * Math.sqrt(i),
+       a = theta * i;
+     return {
+       x: width / 2 + r * Math.cos(a),
+       y: height / 2 + r * Math.sin(a)
+     };
+   };
+ }
+ var gui = d3.select("#videoPlayer");
+ gui.append("span")
+   .classed("zoom in", true)
+   .text("+")
+   .on("click", function() {
+     _zoom.scaleBy(svg, 2);
+   });
+ gui.append("span")
+   .classed("zoom out", true)
+   .text("-")
+   .on("click", function() {
+     _zoom.scaleBy(svg, 0.5);
+   })
 
     // the placements are arbitrary
     var bubbles = movies.append('circle')
