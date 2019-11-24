@@ -57,7 +57,6 @@ rewindButton.on("click", function(d,i){
     console.log("test");
 });
 d3.csv("movies.csv",function(data) {
-  rawData = data;
   data.forEach(function(d) {
     d.color = d.color,
     d.director_name = d.director_name,
@@ -96,6 +95,21 @@ d3.csv("movies.csv",function(data) {
 
   // myNodes.sort(function (a, b) { return b.imdb_score - a.imdb_score; });
 
+  var forceStrength = 0.01;
+
+
+
+ let simulation = d3.forceSimulation()
+  .force("charge", d3.forceManyBody().strength(-75))
+  .alphaDecay(0)
+   // .force("x", d3.forceX(width).strength(forceStrength))
+   // .force("y", d3.forceY(height).strength(forceStrength))
+   .force("collide", d3.forceCollide(
+     function(d) {
+     // console.log("radius" + radiusScale(d.imdb_score));
+      return radiusScale(d.imdb_score);
+   })          // set your radius function
+ );
 
 
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
@@ -130,7 +144,7 @@ var movies2010 = svg.selectAll('circle')
 
 
     // the placements are arbitrary
-    movies2010.append('circle')
+    var bubbles = movies2010.append('circle')
     .filter(function(d) {
       return d.title_year == 2010;
     })
@@ -142,6 +156,23 @@ var movies2010 = svg.selectAll('circle')
     .on('mouseover', toolTip.show)
     .on('mouseout', toolTip.hide);
 
+    simulation.nodes(data)
+      .on('tick', ticker);
+
+    function ticker() {
+      bubbles
+        .attr("cx", function (d) {
+          // console.log("d.x " + d.x);
+
+          return d.x;
+        })
+
+        .attr("cy", function (d) {
+          // console.log("d.y " + d.y);
+
+          return d.y;
+        });
+    }
 
 
     var center = { x: width / 2, y: height / 2 };
@@ -155,16 +186,6 @@ var movies2010 = svg.selectAll('circle')
        "Unrated": 5 * width /6 -160
      };
 
-     var forceStrength = 0.01;
-
-
-
-    let simulation = d3.forceSimulation()
-      .force("x", d3.forceX(width /2).strength(0.02))
-      .force("y", d3.forceY(height /2).strength(0.02))
-      .force("collide", d3.forceCollide(function(d){
-        return radiusScale(d.imdb_score) + 1
-      }))
 
 
 
@@ -276,4 +297,4 @@ var movies2010 = svg.selectAll('circle')
         .style('position', 'fixed')
         .style('bottom', '75px')
         .style('right', '10px');
-});
+      });
