@@ -333,4 +333,7 @@ var movies = svg.selectAll('circle')
         }
       });
 
+    if (year == 2010) {
+      rewindButton.style('display', 'none');
+    }
 });
