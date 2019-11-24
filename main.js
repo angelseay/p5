@@ -18,13 +18,6 @@ svg.append("rect")
   .attr("width",width)
   .attr("height",height);
 
-var title = svg.append("h1")
-    .attr("x", 200)
-    .attr("y", 400)
-    .attr("font-size", "20px")
-    .style("fill", "white")
-    .attr("text", "Analyzing Data");
-
 var playButton = svg.append("polygon")
   .attr("id", "playButton")
   .attr("points", "380,450 380,470 400,460 ")
@@ -151,6 +144,10 @@ var movies = svg.selectAll('circle')
    .on("click", function() {
      _zoom.scaleBy(svg, 0.5);
    })
+
+function updateTitle() {
+  d3.select("#title").text("Analyzing Movies: " + year);
+}
 
 function updateCircles() {
   // the placements are arbitrary
@@ -356,6 +353,7 @@ function updateCircles() {
         if (year < 2016) {
           fastForwardMovies();
           updateCircles();
+          updateTitle();
 
         }
       });
@@ -372,6 +370,7 @@ function updateCircles() {
         if (year > 2010) {
           rewindMovies();
           updateCircles();
+          updateTitle();
 
         }
       });
@@ -379,4 +378,15 @@ function updateCircles() {
     if (year == 2010) {
       rewindButton.style('display', 'none');
     }
+
+
+    var title = svg.append("text")
+        .attr("id", "title")
+        .attr("x", 50)
+        .attr("y", 50)
+        .attr("font-size", "32px")
+        .style("fill", "white")
+        .text("Analyzing Movies: " + year);
+
+
   });
