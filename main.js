@@ -308,6 +308,9 @@ function updateCircles() {
         .style('right', '10px');
       });
 
+    // initialize
+    updateCircles();
+
     function fastForwardMovies() {
       if (year == 2015) {
         forwardButton.style('display', 'none');
