@@ -84,8 +84,6 @@ d3.csv("movies.csv",function(data) {
 
 
 
-var colors = d3.scaleOrdinal(d3.schemeCategory10);
-
 // adds a tooltip
 var toolTip = d3.tip()
     .attr('class', 'd3-tip')
@@ -149,6 +147,8 @@ function updateTitle() {
   d3.select("#title").text("Analyzing Movies: " + year);
 }
 
+var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
 function updateCircles() {
   // the placements are arbitrary
   var bubbles = movies.append('circle')
@@ -156,8 +156,8 @@ function updateCircles() {
   .filter(function(d) {
     return d.title_year == year;
   })
-  .attr("fill",function(d,i){return colors(i);})
-  .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
+  .attr("fill",function(d,i){return colors(d.content_rating);})
+  .attr('stroke', function (d, i) { return d3.rgb(colors(d.content_rating)).darker(); })
   .attr('r', function(d) {
     return d.radius;
   })
@@ -209,6 +209,7 @@ function updateCircles() {
     "Crime", "Documentary", "Drama", "Family", "Fantasy", "Game-Show", "History",
     "Horror", "Music", "Musical", "Mystery", "Reality-TV", "Romance", "Sci-Fi",
     "Sport", "Thriller", "War", "Western"];
+
 
     // creates a drop-down menu to filter the movies by genre
     d3.select(videoPlayer)
