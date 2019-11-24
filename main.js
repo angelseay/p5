@@ -1,10 +1,12 @@
 var width = 800;
 var height= 500;
 
-    var maxAmount = 10;
-    // defines the maximum values (domain) and maximum radius values (range) for our cirlces
+var maxAmount = 10;
+// defines the maximum values (domain) and maximum radius values (range) for our cirlces
 
-    var radiusScale = d3.scaleSqrt().domain([0, 10]).range([10, 80])
+var radiusScale = d3.scaleSqrt().domain([0, 10]).range([10, 80]);
+
+var year = 2010;
 
 //Create SVGs for background
 var svg = d3.select("#videoPlayer")
@@ -23,7 +25,6 @@ var title = svg.append("h1")
     .style("fill", "white")
     .attr("text", "Analyzing Data");
 
-
 var playButton = svg.append("polygon")
   .attr("id", "playButton")
   .attr("points", "380,450 380,470 400,460 ")
@@ -32,30 +33,6 @@ var playButton = svg.append("polygon")
     console.log("test");
   });
 
-var forwardButton = svg.append("g")
-  .attr("id", "forwardButton");
-forwardButton.append("polygon")
-  .attr("points", "490,455 490,465 500,460")
-  .style("fill", "white");
-forwardButton.append("polygon")
-  .attr("points", "500,455 500,465 510,460")
-  .style("fill", "white");
-forwardButton.on("click", function(d,i){
-  console.log("test");
-  });
-
-
-var rewindButton = svg.append("g")
-  .attr("id", "rewindButton");
-rewindButton.append("polygon")
-  .attr("points", "280,455 280,465 270,460")
-  .style("fill", "white");
-rewindButton.append("polygon")
-  .attr("points", "270,455 270,465 260,460")
-  .style("fill", "white");
-rewindButton.on("click", function(d,i){
-    console.log("test");
-});
 d3.csv("movies.csv",function(data) {
   data.forEach(function(d) {
     d.color = d.color,
@@ -133,7 +110,7 @@ var toolTip = d3.tip()
 svg.call(toolTip);
 
 // adds every movie in 2010
-var movies2010 = svg.selectAll('circle')
+var movies = svg.selectAll('circle')
     .data(data)
     .enter()
     .append('g')
@@ -144,7 +121,8 @@ var movies2010 = svg.selectAll('circle')
 
 
     // the placements are arbitrary
-    var bubbles = movies2010.append('circle')
+    var bubbles = movies.append('circle')
+
     .filter(function(d) {
       return d.title_year == 2010;
     })
@@ -173,7 +151,6 @@ var movies2010 = svg.selectAll('circle')
           return d.y;
         });
     }
-
 
     var center = { x: width / 2, y: height / 2 };
 
@@ -244,7 +221,7 @@ var movies2010 = svg.selectAll('circle')
             }
 
             // hides movies whose genre does not match the selected genre
-            movies2010.selectAll('circle')
+            movies.selectAll('circle')
                 .filter(function (d) {
                     var boolean = true;
                     for (var i = 0; i < genre.length; i++) {
@@ -256,7 +233,6 @@ var movies2010 = svg.selectAll('circle')
                     }
 
                     if (boolean == false) {
-                      console.log(d.genres);
                       return d.genres;
                     }
                 })
@@ -266,7 +242,7 @@ var movies2010 = svg.selectAll('circle')
                 .attr('r', 0); // hidden through setting radius to 0
 
             // shows all movies whose genre match the selected genre
-            movies2010.selectAll('circle')
+            movies.selectAll('circle')
                 .filter(function (d) {
                   var boolean = true;
                   for (var i = 0; i < genre.length; i++) {
@@ -298,3 +274,89 @@ var movies2010 = svg.selectAll('circle')
         .style('bottom', '75px')
         .style('right', '10px');
       });
+
+    function fastForwardMovies() {
+      if (year == 2015) {
+        forwardButton.style('display', 'none');
+      }
+
+      movies.selectAll('circle')
+        .style('display', 'none');
+
+      year++;
+
+      if (year > 2010) {
+        rewindButton.style('display', 'block');
+      }
+
+      movies.append('circle')
+        .filter(function(d) {
+          return d.title_year == year;
+        })
+        .attr("fill",function(d,i){return colors(i);})
+        .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
+        .attr('r', function(d) {
+          return d.radius;
+        })
+        .on('mouseover', toolTip.show)
+        .on('mouseout', toolTip.hide);
+    }
+
+    function rewindMovies() {
+      if (year == 2011) {
+        rewindButton.style('display', 'none');
+      }
+
+      movies.selectAll('circle')
+        .style('display', 'none');
+
+      year--;
+
+      if (year < 2016) {
+        forwardButton.style('display', 'block');
+      }
+
+      movies.append('circle')
+        .filter(function(d) {
+          return d.title_year == year;
+        })
+        .attr("fill",function(d,i){return colors(i);})
+        .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
+        .attr('r', function(d) {
+          return d.radius;
+        })
+        .on('mouseover', toolTip.show)
+        .on('mouseout', toolTip.hide);
+    }
+
+    var forwardButton = svg.append("g")
+      .attr("id", "forwardButton");
+      forwardButton.append("polygon")
+        .attr("points", "490,455 490,465 500,460")
+        .style("fill", "white");
+      forwardButton.append("polygon")
+        .attr("points", "500,455 500,465 510,460")
+        .style("fill", "white");
+      forwardButton.on("click", function(d,i){
+        if (year < 2016) {
+          fastForwardMovies();
+        }
+      });
+
+    var rewindButton = svg.append("g")
+      .attr("id", "rewindButton");
+      rewindButton.append("polygon")
+        .attr("points", "280,455 280,465 270,460")
+        .style("fill", "white");
+      rewindButton.append("polygon")
+        .attr("points", "270,455 270,465 260,460")
+        .style("fill", "white");
+      rewindButton.on("click", function(d,i){
+        if (year > 2010) {
+          rewindMovies();
+        }
+      });
+
+    if (year == 2010) {
+      rewindButton.style('display', 'none');
+    }
