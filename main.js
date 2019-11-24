@@ -296,15 +296,6 @@ function updateCircles() {
                 .attr('r', function (d) {
                   return radiusScale(d.imdb_score);
                 });
-
-      // append text describing how to select multiple options from drop-down menu
-      d3.select(videoPlayer)
-        .append('g')
-        .append('text')
-        .text('Hold down the Ctrl (windows) / Command (Mac) button to select multiple options.')
-        .style('position', 'fixed')
-        .style('bottom', '75px')
-        .style('right', '10px');
       });
 
     // initialize
