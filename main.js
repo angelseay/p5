@@ -152,37 +152,40 @@ var movies = svg.selectAll('circle')
      _zoom.scaleBy(svg, 0.5);
    })
 
-    // the placements are arbitrary
-    var bubbles = movies.append('circle')
+function updateCircles() {
+  // the placements are arbitrary
+  var bubbles = movies.append('circle')
 
-    .filter(function(d) {
-      return d.title_year == 2010;
-    })
-    .attr("fill",function(d,i){return colors(i);})
-    .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
-    .attr('r', function(d) {
-      return d.radius;
-    })
-    .on('mouseover', toolTip.show)
-    .on('mouseout', toolTip.hide);
+  .filter(function(d) {
+    return d.title_year == year;
+  })
+  .attr("fill",function(d,i){return colors(i);})
+  .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
+  .attr('r', function(d) {
+    return d.radius;
+  })
+  .on('mouseover', toolTip.show)
+  .on('mouseout', toolTip.hide);
 
-    simulation.nodes(data)
-      .on('tick', ticker);
+  simulation.nodes(data)
+    .on('tick', ticker);
 
-    function ticker() {
-      bubbles
-        .attr("cx", function (d) {
-          // console.log("d.x " + d.x);
+  function ticker() {
+    bubbles
+      .attr("cx", function (d) {
+        // console.log("d.x " + d.x);
 
-          return d.x;
-        })
+        return d.x;
+      })
 
-        .attr("cy", function (d) {
-          // console.log("d.y " + d.y);
+      .attr("cy", function (d) {
+        // console.log("d.y " + d.y);
 
-          return d.y;
-        });
-    }
+        return d.y;
+      });
+  }
+
+}
 
     var center = { x: width / 2, y: height / 2 };
 
@@ -194,7 +197,6 @@ var movies = svg.selectAll('circle')
        "R": 4 * width /6 ,
        "Unrated": 5 * width /6 -160
      };
-
 
 
 
@@ -320,17 +322,6 @@ var movies = svg.selectAll('circle')
         rewindButton.style('display', 'block');
       }
 
-      movies.append('circle')
-        .filter(function(d) {
-          return d.title_year == year;
-        })
-        .attr("fill",function(d,i){return colors(i);})
-        .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
-        .attr('r', function(d) {
-          return d.radius;
-        })
-        .on('mouseover', toolTip.show)
-        .on('mouseout', toolTip.hide);
     }
 
     function rewindMovies() {
@@ -347,17 +338,7 @@ var movies = svg.selectAll('circle')
         forwardButton.style('display', 'block');
       }
 
-      movies.append('circle')
-        .filter(function(d) {
-          return d.title_year == year;
-        })
-        .attr("fill",function(d,i){return colors(i);})
-        .attr('stroke', function (d, i) { return d3.rgb(colors(i)).darker(); })
-        .attr('r', function(d) {
-          return d.radius;
-        })
-        .on('mouseover', toolTip.show)
-        .on('mouseout', toolTip.hide);
+
     }
 
     var forwardButton = svg.append("g")
@@ -371,6 +352,8 @@ var movies = svg.selectAll('circle')
       forwardButton.on("click", function(d,i){
         if (year < 2016) {
           fastForwardMovies();
+          updateCircles();
+
         }
       });
 
@@ -385,6 +368,8 @@ var movies = svg.selectAll('circle')
       rewindButton.on("click", function(d,i){
         if (year > 2010) {
           rewindMovies();
+          updateCircles();
+
         }
       });
 
