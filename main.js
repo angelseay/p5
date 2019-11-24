@@ -309,6 +309,33 @@ function updateCircles() {
 
     // initialize
     updateCircles();
+    calculateInfo();
+
+    d3.select(videoPlayer)
+        .append('g')
+        .append('text')
+        .attr('id', 'text')
+        .text('There were ' + numMovies[year.toString()] + ' movies made in ' + year + '.')
+        .style('position', 'absolute')
+        .style('top', '150px')
+        .style('right', '180px');
+
+    function calculateInfo() {
+      numMovies = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .rollup(function(v) { return v.length; })
+        .entries(data);
+      console.log(numMovies);
+    }
+
+    function addText() {
+      document.getElementById('text').innerHTML = 'There were ' + numMovies[year.toString()]
+        + ' movies made in ' + year + '.';
+    }
+
+    function clearText() {
+      document.getElementById('text').innerHTML = '';
+    }
 
     function fastForwardMovies() {
       if (year == 2015) {
@@ -356,7 +383,9 @@ function updateCircles() {
           fastForwardMovies();
           updateCircles();
           updateTitle();
-
+          clearText();
+          calculateInfo();
+          addText();
         }
       });
 
@@ -373,6 +402,9 @@ function updateCircles() {
           rewindMovies();
           updateCircles();
           updateTitle();
+          clearText();
+          calculateInfo();
+          addText();
 
         }
       });
@@ -412,7 +444,5 @@ function updateCircles() {
          "In "+ year +", the United States dominated the movie market with 167 movies. The country that came in second, the UK, only had 21 movies."
        );
     }
-
-
 
   });
