@@ -413,28 +413,4 @@ function updateCircles() {
       .attr("font-size", "32px")
       .style("fill", "white")
       .text("Analyzing Movies: " + year);
-
-    var story = d3.select("#story");
-    story.append("text")
-      .style("float", "right")
-      .attr("x", 900)
-      .attr("y", 50)
-      .attr("font-size", "24px");
-
-    if (year == 2010) {
-      var movieCountUSA = 0;
-      var movieCountUK = 0;
-      var colorCount = 0;
-      var avgDuration = 0;
-      var avgGross = 0;
-      // loop over each genre and rating
-      var avgBudget = 0;
-      var avgProfit = avgGross - avgProfit;
-      var maxFacebookLikes =0;
-      var movieCount = 0;
-      story.text(
-         "In "+ year +", the United States dominated the movie market with 167 movies. The country that came in second, the UK, only had 21 movies."
-       );
-    }
-
   });
