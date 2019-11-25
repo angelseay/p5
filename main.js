@@ -399,6 +399,9 @@ function updateCircles() {
       var countries = moviesByCountry["$" + year.toString()].keys();
       var contentRatings = moviesByContentRating["$" + year.toString()].keys();
 
+      percentMarket = Math.round(((moviesByCountry["$" + year.toString()]['$USA'])/
+      (numMovies["$"+ year.toString()])) * 100);
+
 
 
     }
@@ -407,21 +410,20 @@ function updateCircles() {
       var text = document.getElementById('text');
 
       text.innerHTML = '<p><b>Year At a Glance</b><p>'
-      text.innerHTML += '<p>There were ' + numMovies["$"+ year.toString()] +
+      text.innerHTML += 'There were ' + numMovies["$"+ year.toString()] +
       ' movies made in ' + year;
 
       if (year > 2010) {
         if (percentChange > 0) {
-          text.innerHTML += ' up ' + percentChange + '% from ' + (year - 1);
+          text.innerHTML += ', up ' + percentChange + '% from ' + (year - 1);
         } else {
-          text.innerHTML += ' down ' + Math.abs(percentChange) + '% from ' + (year - 1);
+          text.innerHTML += ', down ' + Math.abs(percentChange) + '% from ' + (year - 1);
         }
       }
 
-
-
       // text.innerHTML += '\nThe United States dominated the movie market with ' + moviesByCountry["$" + year.toString()]['$USA'] +' movies. The country that came in second, the UK, only had 21 movies.'
-      text.innerHTML += '</p>';
+      text.innerHTML += '. <p>The top creator of movies was the USA consisting of '
+        + percentMarket + '% of the market.</p>';
 
 
 
