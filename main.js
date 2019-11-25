@@ -451,7 +451,7 @@ function updateCircles() {
       percentChangeText(percentChangeNum);
 
       // movies by country
-      text.innerHTML += '. <p>The top creator of movies was the USA consisting of '
+      text.innerHTML += '. <p>USA was the top creator of movies, comprising '
         + percentMarket + '% of the market.</p>';
 
       // avg. duration of movies
