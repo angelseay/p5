@@ -306,9 +306,9 @@ function updateCircles() {
         .append('g')
         .append('text')
         .attr('id', 'text')
-        .text('There were ' + numMovies["$" + year.toString()] + ' movies made in '
-          + year + '.')
         .style('float', 'left');
+
+    addText();
 
     function calculateInfo() {
       numMovies = d3.nest()
@@ -390,16 +390,21 @@ function updateCircles() {
     }
 
     function addText() {
-      document.getElementById('text').innerHTML = 'There were ' + numMovies["$"+
-      year.toString()] + ' movies made in ' + year;
+      var text = document.getElementById('text');
 
-      if (percentChange > 0) {
-        document.getElementById('text').innerHTML += ' up ' + percentChange +
-        '% from ' + (year - 1) + '.';
-      } else {
-        document.getElementById('text').innerHTML += ' down ' + Math.abs(percentChange)
-        + '% from ' + (year - 1) + '.';
+      text.innerHTML = 'There were ' + numMovies["$"+ year.toString()] +
+      ' movies made in ' + year;
+
+      if (year > 2010) {
+        if (percentChange > 0) {
+          text.innerHTML += ' up ' + percentChange + '% from ' + (year - 1);
+        } else {
+          text.innerHTML += ' down ' + Math.abs(percentChange) + '% from ' + (year - 1);
+        }
       }
+
+
+
     }
 
     function clearText() {
