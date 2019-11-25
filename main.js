@@ -151,6 +151,8 @@ function updateTitle() {
 
 var ratings =
     ["G", "PG", "PG-13", "R", "Not Rated"];
+
+
 var colors = d3.scaleOrdinal().domain(ratings).range(d3.schemeCategory10);
 
 function updateCircles() {
@@ -207,7 +209,8 @@ function updateCircles() {
     "Horror", "Music", "Musical", "Mystery", "Reality-TV", "Romance", "Sci-Fi",
     "Sport", "Thriller", "War", "Western"];
 
-
+    // TO DO - color by radio buttons?
+    var colorBy = ["Color", "Language", "Country", "Content rating"]
 
     // creates a drop-down menu to filter the movies by genre
     d3.select(videoPlayer)
@@ -324,7 +327,13 @@ function updateCircles() {
         .key(function(d) { return d.country; })
         .rollup(function(v) { return v.length; })
         .map(data);
-      console.log(moviesByCountry);
+
+      moviesByLanguage = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.language; })
+        .rollup(function(v) { return v.length; })
+        .map(data);
+
 
       moviesByColor = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -384,6 +393,14 @@ function updateCircles() {
         .key(function(d) { return d.movie_title; })
         .map(data);
       console.log(moviesByIMDbScore);
+
+      var movieColor = moviesByColor["$" + year.toString()].keys()
+      var languages = moviesByLanguage["$" + year.toString()].keys();
+      var countries = moviesByCountry["$" + year.toString()].keys();
+      var contentRatings = moviesByContentRating["$" + year.toString()].keys();
+
+
+
     }
 
     function addText() {
