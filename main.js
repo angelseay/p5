@@ -315,11 +315,78 @@ function updateCircles() {
         .key(function(d) { return d.title_year; })
         .rollup(function(v) { return v.length; })
         .map(data);
+      console.log(numMovies);
 
       if (year > 2010) {
         percentChange = Math.round(((numMovies["$" + year.toString()] - numMovies["$" +
           (year - 1).toString()])/numMovies["$" + (year - 1).toString()]) * 100);
       }
+
+      moviesByCountry = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.country; })
+        .rollup(function(v) { return v.length; })
+        .map(data);
+      console.log(moviesByCountry);
+
+      moviesByColor = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.color; })
+        .rollup(function(v) { return v.length; })
+        .map(data);
+      console.log(moviesByColor);
+
+      moviesByDuration = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .rollup(function(v) {
+          return d3.mean(v, function(d) { return d.duration; })
+        })
+        .map(data);
+      console.log(moviesByDuration);
+
+      moviesByGross = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .rollup(function(v) {
+          return d3.mean(v, function(d) { return d.gross; })
+        })
+        .map(data);
+      console.log(moviesByGross);
+
+      moviesByGenre = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.genres; })
+        .rollup(function(v) { return v.length; })
+        .map(data);
+      console.log(moviesByGenre);
+
+      moviesByContentRating = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.content_rating; })
+        .rollup(function(v) { return v.length; })
+        .map(data);
+      console.log(moviesByContentRating);
+
+      moviesByBudget = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .rollup(function(v) {
+          return d3.mean(v, function(d) { return d.budget; })
+        })
+        .map(data);
+      console.log(moviesByBudget);
+
+      moviesByFacebookLikes = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.movie_facebook_likes; })
+        .key(function(d) { return d.movie_title; })
+        .map(data);
+      console.log(moviesByFacebookLikes);
+
+      moviesByIMDbScore = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.imdb_score; })
+        .key(function(d) { return d.movie_title; })
+        .map(data);
+      console.log(moviesByIMDbScore);
     }
 
     function addText() {
