@@ -358,7 +358,7 @@ function updateCircles() {
         .key(function(d) { return d.color; })
         .rollup(function(v) { return v.length; })
         .map(data);
-      console.log(moviesByColor);
+      //console.log(moviesByColor);
 
       moviesByDuration = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -381,7 +381,7 @@ function updateCircles() {
         .key(function(d) { return d.genres; })
         .rollup(function(v) { return v.length; })
         .map(data);
-      console.log(moviesByGenre);
+      //console.log(moviesByGenre);
 
       moviesByContentRating = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -410,7 +410,7 @@ function updateCircles() {
         .key(function(d) { return d.imdb_score; })
         .key(function(d) { return d.movie_title; })
         .map(data);
-      console.log(moviesByIMDbScore);
+      //console.log(moviesByIMDbScore);
 
       var movieColor = moviesByColor["$" + year.toString()].keys();
       var languages = moviesByLanguage["$" + year.toString()].keys();
@@ -474,6 +474,8 @@ function updateCircles() {
       if (year > 2010) {
         if (percentChange > 0) {
           text.innerHTML += ', up ' + percentChange + '% from ' + (year - 1);
+        } else if (percentChange == 0) {
+          text.innerHTML += ', with relatively no change from ' + (year - 1);
         } else {
           text.innerHTML += ', down ' + Math.abs(percentChange) + '% from ' + (year - 1);
         }
