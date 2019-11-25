@@ -1,6 +1,7 @@
 var width = 800;
 var height= 500;
 
+
 var maxAmount = 10;
 // defines the maximum values (domain) and maximum radius values (range) for our cirlces
 
@@ -148,7 +149,9 @@ function updateTitle() {
   d3.select("#title").text("Analyzing Movies: " + year);
 }
 
-var colors = d3.scaleOrdinal(d3.schemeCategory10);
+var ratings =
+    ["G", "PG", "PG-13", "R", "Not Rated"];
+var colors = d3.scaleOrdinal().domain(ratings).range(d3.schemeCategory10);
 
 function updateCircles() {
   // the placements are arbitrary
@@ -187,14 +190,7 @@ function updateCircles() {
 
     var center = { x: width / 2, y: height / 2 };
 
-    // X locations of the ratings.
-     var ratingsX = {
-       "G": 160,
-       "PG": 2 * width /6,
-       "PG-13": width/2,
-       "R": 4 * width /6 ,
-       "Unrated": 5 * width /6 -160
-     };
+
 
 
 
@@ -210,6 +206,7 @@ function updateCircles() {
     "Crime", "Documentary", "Drama", "Family", "Fantasy", "Game-Show", "History",
     "Horror", "Music", "Musical", "Mystery", "Reality-TV", "Romance", "Sci-Fi",
     "Sport", "Thriller", "War", "Western"];
+
 
 
     // creates a drop-down menu to filter the movies by genre
@@ -392,7 +389,8 @@ function updateCircles() {
     function addText() {
       var text = document.getElementById('text');
 
-      text.innerHTML = 'There were ' + numMovies["$"+ year.toString()] +
+      text.innerHTML = '<p><b>Year At a Glance</b><p>'
+      text.innerHTML += '<p>There were ' + numMovies["$"+ year.toString()] +
       ' movies made in ' + year;
 
       if (year > 2010) {
@@ -402,6 +400,11 @@ function updateCircles() {
           text.innerHTML += ' down ' + Math.abs(percentChange) + '% from ' + (year - 1);
         }
       }
+
+
+
+      // text.innerHTML += '\nThe United States dominated the movie market with ' + moviesByCountry["$" + year.toString()]['$USA'] +' movies. The country that came in second, the UK, only had 21 movies.'
+      text.innerHTML += '</p>';
 
 
 
@@ -495,4 +498,33 @@ function updateCircles() {
       .attr("font-size", "32px")
       .style("fill", "white")
       .text("Analyzing Movies: " + year);
+
+
+
+
+  var legends = d3.select("#legends").select("svg");
+  legends.style("float", "left")
+
+  legends.attr("width",'100%')
+  .attr("height",height)
+  legends.append("g")
+    .attr("id", "legendRatings")
+    .style('position', 'relative')
+    .style('left', '82px')
+    .style('bottom', '2px')
+
+  var legendRatings = d3.legendColor()
+
+    .shapeWidth(100)
+    // .cells([1, 2, 3, 4, 5])
+    .orient('vertical')
+    .scale(colors);
+
+  legends.select("#legendRatings")
+    .call(legendRatings);
+
+
+
+
+
   });
