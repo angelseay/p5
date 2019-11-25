@@ -329,6 +329,10 @@ function updateCircles() {
 
     var percentChangeNum;
     var percentChangeDuration;
+    var maxScore;
+    var scoreKeys;
+    var maxLikes;
+    var likesKeys;
 
     function calculateInfo() {
       numMovies = d3.nest()
@@ -336,9 +340,10 @@ function updateCircles() {
         .rollup(function(v) { return v.length; })
         .map(data);
 
+      // calculates percent change of the total number of movies in each year
       if (year > 2010) {
-        percentChangeNum = Math.round(((numMovies["$" + year.toString()] - numMovies["$" +
-          (year - 1).toString()])/numMovies["$" + (year - 1).toString()]) * 100);
+        percentChangeNum = Math.round(((numMovies["$" + year.toString()]
+          - numMovies["$" + (year - 1).toString()])/numMovies["$" + (year - 1).toString()]) * 100);
       }
 
       moviesByCountry = d3.nest()
@@ -358,7 +363,6 @@ function updateCircles() {
         .key(function(d) { return d.color; })
         .rollup(function(v) { return v.length; })
         .map(data);
-      //console.log(moviesByColor);
 
       moviesByDuration = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -375,13 +379,6 @@ function updateCircles() {
         })
         .map(data);
       console.log(moviesByGross);
-
-      moviesByGenre = d3.nest()
-        .key(function(d) { return d.title_year; })
-        .key(function(d) { return d.genres; })
-        .rollup(function(v) { return v.length; })
-        .map(data);
-      //console.log(moviesByGenre);
 
       moviesByContentRating = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -410,7 +407,6 @@ function updateCircles() {
         .key(function(d) { return d.imdb_score; })
         .key(function(d) { return d.movie_title; })
         .map(data);
-      //console.log(moviesByIMDbScore);
 
       var movieColor = moviesByColor["$" + year.toString()].keys();
       var languages = moviesByLanguage["$" + year.toString()].keys();
@@ -418,55 +414,65 @@ function updateCircles() {
       var contentRatings = moviesByContentRating["$" + year.toString()].keys();
 
       var IMDbScores = moviesByIMDbScore["$" + year.toString()].keys();
+      var facebookLikes = moviesByFacebookLikes["$" + year.toString()].keys();
 
+      // calculates percent of the movie market that the USA makes up
       percentMarket = Math.round(((moviesByCountry["$" + year.toString()]['$USA'])/
       (numMovies["$"+ year.toString()])) * 100);
 
-      // identifies movie with highest IMDb score
-      max = 0;
+      // finds the movie with the highest IMDb score
+      outputScoresArr = findMax(IMDbScores, moviesByIMDbScore);
+      maxScore = outputScoresArr[0];
+      scoresKeys = outputScoresArr[1];
 
-      for (i = 0, length = IMDbScores.length; i < length; i++) {
-        score = IMDbScores[i];
-
-        if (score > max) {
-          max = score;
-          array = moviesByIMDbScore["$" + year.toString()]["$" + max];
-        }
+      // calculates percent change of the average duration of movies in each year
+      if (year > 2010) {
+        percentChangeDuration = Math.round(((moviesByDuration["$" + year.toString()]
+          - moviesByDuration["$" + (year - 1).toString()])/moviesByDuration["$"
+          + (year - 1).toString()]) * 100);
       }
 
-      movieTitle = array.keys();
-
-      if (year > 2010) {
-        percentChangeDuration = Math.round(((moviesByDuration["$" + year.toString()] - moviesByDuration["$" +
-          (year - 1).toString()])/moviesByDuration["$" + (year - 1).toString()]) * 100);      }
+      // finds the movie with the most Facebook likes
+      outputLikesArr = findMax(facebookLikes, moviesByFacebookLikes);
+      maxLikes = outputLikesArr[0];
+      maxLikes = maxLikes.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); // adds comma to number
+      likesKeys = outputLikesArr[1];
 
     }
 
     function addText() {
       var text = document.getElementById('text');
 
+      // number of movies
       text.innerHTML = '<p><b>Year At a Glance</b><p>'
       text.innerHTML += 'There were ' + numMovies["$"+ year.toString()] +
       ' movies made in ' + year;
 
       percentChangeText(percentChangeNum);
 
+      // movies by country
       text.innerHTML += '. <p>The top creator of movies was the USA consisting of '
         + percentMarket + '% of the market.</p>';
 
-      if (movieTitle.length == 1) {
-        text.innerHTML += '<p> The movie with the highest IMDb score is <i>' + movieTitle[0].trim()
-          + '</i> with a score of ' + max + ' out of 10. </p>';
-      } else {
-        text.innerHTML += '<p>' +  movieTitle.length + ' movies tied for the highest IMDb score '
-          + 'of ' + max + ' out of 10: <i>' + movieTitle[0].trim() + '</i> and <i>' + movieTitle[1].trim() + '</i>.</p>';
-      }
-
-      text.innerHTML += 'The average duration of the movies is ' + moviesByDuration["$" + year.toString()].toFixed(2);
+      // avg. duration of movies
+      text.innerHTML += 'The average duration of all the movies in ' + year +
+      ' was ' + moviesByDuration["$" + year.toString()].toFixed(2);
 
       percentChangeText(percentChangeDuration);
 
-      text.innerHTML += '.<p>';
+      // movie with highest IMDb score
+      if (scoresKeys.length == 1) {
+        text.innerHTML += '.<p><i>' + scoresKeys[0].trim()
+        + '</i> had the highest IMDb score with a ' + maxScore + '/10. </p>';
+      } else {
+        text.innerHTML += '.<p>' +  scoresKeys.length + ' movies tied for the highest IMDb score '
+          + 'of ' + maxScore + '/10: <i>' + scoresKeys[0].trim() + '</i> and <i>'
+          + scoresKeys[1].trim() + '</i>.</p>';
+      }
+
+      // movie with most likes on Facebook
+      text.innerHTML += '<p> On Facebook, <i>' + likesKeys[0].trim()
+      + '</i> garnered the most popularity with '+ maxLikes + ' likes. </p>';
 
     }
 
@@ -480,6 +486,28 @@ function updateCircles() {
           text.innerHTML += ', down ' + Math.abs(percentChange) + '% from ' + (year - 1);
         }
       }
+    }
+
+    function findMax(array, movieCategory) {
+      output = [];
+      max = 0;
+
+      for (i = 0, length = array.length; i < length; i++) {
+        score = array[i];
+        score = score * 1; // changes number to string
+
+        if (score > max) {
+          max = score;
+          movieArr = movieCategory["$" + year.toString()]["$" + max.toString()];
+        }
+      }
+
+      keys = movieArr.keys();
+
+      output[0] = max;
+      output[1] = keys;
+
+      return output;
     }
 
     function clearText() {
