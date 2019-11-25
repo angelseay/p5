@@ -306,23 +306,33 @@ function updateCircles() {
         .append('g')
         .append('text')
         .attr('id', 'text')
-        .text('There were ' + numMovies["$"+year.toString()] + ' movies made in ' + year + '.')
-        .style('position', 'absolute')
-        .style('top', '150px')
-        .style('right', '180px');
+        .text('There were ' + numMovies["$" + year.toString()] + ' movies made in '
+          + year + '.')
+        .style('float', 'left');
 
     function calculateInfo() {
       numMovies = d3.nest()
         .key(function(d) { return d.title_year; })
         .rollup(function(v) { return v.length; })
         .map(data);
-        console.log(numMovies);
-        console.log(numMovies["$"+year.toString()]);
+
+      if (year > 2010) {
+        percentChange = Math.round(((numMovies["$" + year.toString()] - numMovies["$" +
+          (year - 1).toString()])/numMovies["$" + (year - 1).toString()]) * 100);
+      }
     }
 
     function addText() {
-      document.getElementById('text').innerHTML = 'There were ' + numMovies["$"+year.toString()]
-        + ' movies made in ' + year + '.';
+      document.getElementById('text').innerHTML = 'There were ' + numMovies["$"+
+      year.toString()] + ' movies made in ' + year;
+
+      if (percentChange > 0) {
+        document.getElementById('text').innerHTML += ' up ' + percentChange +
+        '% from ' + (year - 1) + '.';
+      } else {
+        document.getElementById('text').innerHTML += ' down ' + Math.abs(percentChange)
+        + '% from ' + (year - 1) + '.';
+      }
     }
 
     function clearText() {
