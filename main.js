@@ -310,6 +310,9 @@ function updateCircles() {
 
     addText();
 
+    var percentChangeNum;
+    var percentChangeDuration;
+
     function calculateInfo() {
       numMovies = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -317,7 +320,7 @@ function updateCircles() {
         .map(data);
 
       if (year > 2010) {
-        percentChange = Math.round(((numMovies["$" + year.toString()] - numMovies["$" +
+        percentChangeNum = Math.round(((numMovies["$" + year.toString()] - numMovies["$" +
           (year - 1).toString()])/numMovies["$" + (year - 1).toString()]) * 100);
       }
 
@@ -332,7 +335,6 @@ function updateCircles() {
         .key(function(d) { return d.language; })
         .rollup(function(v) { return v.length; })
         .map(data);
-
 
       moviesByColor = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -417,6 +419,10 @@ function updateCircles() {
 
       movieTitle = array.keys();
 
+      if (year > 2010) {
+        percentChangeDuration = Math.round(((moviesByDuration["$" + year.toString()] - moviesByDuration["$" +
+          (year - 1).toString()])/moviesByDuration["$" + (year - 1).toString()]) * 100);      }
+
     }
 
     function addText() {
@@ -426,13 +432,7 @@ function updateCircles() {
       text.innerHTML += 'There were ' + numMovies["$"+ year.toString()] +
       ' movies made in ' + year;
 
-      if (year > 2010) {
-        if (percentChange > 0) {
-          text.innerHTML += ', up ' + percentChange + '% from ' + (year - 1);
-        } else {
-          text.innerHTML += ', down ' + Math.abs(percentChange) + '% from ' + (year - 1);
-        }
-      }
+      percentChangeText(percentChangeNum);
 
       text.innerHTML += '. <p>The top creator of movies was the USA consisting of '
         + percentMarket + '% of the market.</p>';
@@ -445,6 +445,22 @@ function updateCircles() {
           + 'of ' + max + ' out of 10: <i>' + movieTitle[0].trim() + '</i> and <i>' + movieTitle[1].trim() + '</i>.</p>';
       }
 
+      text.innerHTML += 'The average duration of the movies is ' + moviesByDuration["$" + year.toString()].toFixed(2);
+
+      percentChangeText(percentChangeDuration);
+
+      text.innerHTML += '.<p>';
+
+    }
+
+    function percentChangeText (percentChange) {
+      if (year > 2010) {
+        if (percentChange > 0) {
+          text.innerHTML += ', up ' + percentChange + '% from ' + (year - 1);
+        } else {
+          text.innerHTML += ', down ' + Math.abs(percentChange) + '% from ' + (year - 1);
+        }
+      }
     }
 
     function clearText() {
