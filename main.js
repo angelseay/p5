@@ -210,29 +210,46 @@ function updateCircles() {
     "Sport", "Thriller", "War", "Western"];
 
     // TO DO - color by radio buttons?
-    var colorBy = ["Color", "Language", "Country", "Content rating"]
+    var colorBy = ["Color", "Language", "Country", "Content rating"],
+    j = 0;
 
-    // creates a drop-down menu to filter the movies by genre
-    d3.select(videoPlayer)
-        .append('g')
-        .append('select')
-        .attr('id', 'drop-down')
-        .attr('multiple', 'true')
-        .attr('size', 5)
-        .style("border", "1px solid black")
-        .style('position', 'relative')
-        .style('left', '82px')
-        .style('bottom', '2px')
-        .selectAll('option')
-        .data(genres)
+
+    // Create the shape selectors
+    var form = d3.select(videoPlayer).append("form");
+
+    labels = form.selectAll("label")
+        .data(colorBy)
         .enter()
-        .append('option')
-        .attr('value', function (d) {
-          return d;
-        })
-        .text(function (d) {
-          return d;
-        });
+        .append("label")
+        .text(function(d) {return d;})
+        .insert("input")
+        .attr('type', 'radio')
+        .attr("class", "shape")
+        .attr('name','mode')
+        .attr("value", function(d, i) {return i;})
+        .property("checked", function(d, i) {return i===j;});
+
+      // creates a drop-down menu to filter the movies by genre
+      d3.select(videoPlayer)
+          .append('g')
+          .append('select')
+          .attr('id', 'drop-down')
+          .attr('multiple', 'true')
+          .attr('size', 5)
+          .style("border", "1px solid black")
+          .style('position', 'relative')
+          .style('left', '82px')
+          .style('bottom', '2px')
+          .selectAll('option')
+          .data(genres)
+          .enter()
+          .append('option')
+          .attr('value', function (d) {
+            return d;
+          })
+          .text(function (d) {
+            return d;
+          });
 
     // creates a 'filter' button
     d3.select(videoPlayer)
