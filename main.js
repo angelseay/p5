@@ -95,7 +95,7 @@ var toolTip = d3.tip()
         <tr><th>Rating: </th><td>${d['content_rating']}</td></tr>
         <tr><th>Genres: </th><td>${d['genres']}</td></tr>
         <tr><th>Duration: </th><td>${d['duration'] + ' min'}</td></tr>
-        <tr><th>IMDB Score: </th><td>${d['imdb_score']}</td></tr>
+        <tr><th>IMDb Score: </th><td>${d['imdb_score']}</td></tr>
         <tr><th>Director: </th><td>${d['director_name']}</td></tr>
         <tr><th>Actors: </th><td>${d['actor_1_name'] + ', ' + d['actor_2_name'] +
           ', ' + d['actor_3_name']}</td></tr>`;
@@ -332,7 +332,6 @@ function updateCircles() {
         .key(function(d) { return d.title_year; })
         .rollup(function(v) { return v.length; })
         .map(data);
-      console.log(numMovies);
 
       if (year > 2010) {
         percentChange = Math.round(((numMovies["$" + year.toString()] - numMovies["$" +
@@ -411,15 +410,29 @@ function updateCircles() {
         .map(data);
       console.log(moviesByIMDbScore);
 
-      var movieColor = moviesByColor["$" + year.toString()].keys()
+      var movieColor = moviesByColor["$" + year.toString()].keys();
       var languages = moviesByLanguage["$" + year.toString()].keys();
       var countries = moviesByCountry["$" + year.toString()].keys();
       var contentRatings = moviesByContentRating["$" + year.toString()].keys();
 
+      var IMDbScores = moviesByIMDbScore["$" + year.toString()].keys();
+
       percentMarket = Math.round(((moviesByCountry["$" + year.toString()]['$USA'])/
       (numMovies["$"+ year.toString()])) * 100);
 
+      // identifies movie with highest IMDb score
+      max = 0;
 
+      for (i = 0, length = IMDbScores.length; i < length; i++) {
+        score = IMDbScores[i];
+
+        if (score > max) {
+          max = score;
+          array = moviesByIMDbScore["$" + year.toString()]["$" + max];
+        }
+      }
+
+      movieTitle = array.keys();
 
     }
 
@@ -438,11 +451,16 @@ function updateCircles() {
         }
       }
 
-      // text.innerHTML += '\nThe United States dominated the movie market with ' + moviesByCountry["$" + year.toString()]['$USA'] +' movies. The country that came in second, the UK, only had 21 movies.'
       text.innerHTML += '. <p>The top creator of movies was the USA consisting of '
         + percentMarket + '% of the market.</p>';
 
-
+      if (movieTitle.length == 1) {
+        text.innerHTML += '<p> The movie with the highest IMDb score is <i>' + movieTitle[0].trim()
+          + '</i> with a score of ' + max + ' out of 10. </p>';
+      } else {
+        text.innerHTML += '<p>' +  movieTitle.length + ' movies tied for the highest IMDb score '
+          + 'of ' + max + ' out of 10: <i>' + movieTitle[0].trim() + '</i> and <i>' + movieTitle[1].trim() + '</i>.</p>';
+      }
 
     }
 
