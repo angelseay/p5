@@ -830,7 +830,7 @@ function updateCircles() {
   function updateLegend() {
     var legends = d3.select("#legends").select("svg");
 
-    legends.attr("width",'400')
+    legends.attr("width",'500')
     .attr("height", 500)
     .attr("transform", "translate(800, -795)")
     legends.append("g")
@@ -838,12 +838,28 @@ function updateCircles() {
 
     var legendElements = d3.legendColor()
       .shapeWidth(100)
-      // .cells([1, 2, 3, 4, 5])
       .orient('vertical')
       .scale(colors);
 
     legends.select("#legendElements")
       .call(legendElements);
+
+    numCells = modes[currentMode].length;
+
+    // arranges the cells in two columns
+    d3.selectAll('.cell')
+      .attr('id', function (d, i) { return i; })
+      .attr('transform', function (d, i) {
+        if (numCells > 1) {
+          if (i <= Math.ceil((numCells / 2) - 1) || numCells == 2) {
+            return "translate(0," + i*20 + ")";
+          } else {
+            return "translate(" + 220 + "," + (i - (Math.ceil((numCells/2) - 1) + 1)) * 20 + ")";
+          }
+        } else {
+          return "translate(0, 0)";
+        }
+      })
   }
 
   });
