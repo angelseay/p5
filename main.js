@@ -149,21 +149,38 @@ function updateTitle() {
   d3.select("#title").text("Analyzing Movies: " + year);
 }
 
-var ratings =
-    ["G", "PG", "PG-13", "R", "Not Rated"];
+// this is the default for how we'll color the circles
+var movieColors =
+    ["Color", " Black and White", ""];
 
+var colors = d3.scaleOrdinal().domain(movieColors).range(d3.schemeCategory10);
 
-var colors = d3.scaleOrdinal().domain(ratings).range(d3.schemeCategory10);
+var modes = [];
 
 function updateCircles() {
-  // the placements are arbitrary
-  var bubbles = movies.append('circle')
+  // delete old nodes
+  movies.selectAll('circle').remove();
+  var currentAttribute = "color";
+  if (currentMode == 0) {
+    currentAttribute = "color"
+  } else if (currentMode == 1) {
+    currentAttribute = "language"
+  } else if (currentMode == 2) {
+    currentAttribute = "country"
+  } else if (currentMode == 3) {
+    currentAttribute = "content_rating"
+  }
 
+  // add new nodes
+  var appendedMovies = movies.append('circle')
   .filter(function(d) {
     return d.title_year == year;
   })
-  .attr("fill",function(d,i){return colors(d.content_rating);})
-  .attr('stroke', function (d, i) { return d3.rgb(colors(d.content_rating)).darker(); })
+  .attr("fill",function(d,i){
+    return colors(d[currentAttribute]);
+
+  })
+  .attr('stroke', function (d, i) { return d3.rgb(colors(d[currentAttribute])).darker(); })
   .attr('r', function(d) {
     return d.radius;
   })
@@ -172,29 +189,18 @@ function updateCircles() {
 
   simulation.nodes(data)
     .on('tick', ticker);
-
   function ticker() {
-    bubbles
+    appendedMovies
       .attr("cx", function (d) {
-        // console.log("d.x " + d.x);
-
         return d.x;
       })
-
       .attr("cy", function (d) {
-        // console.log("d.y " + d.y);
-
         return d.y;
       });
   }
-
 }
 
     var center = { x: width / 2, y: height / 2 };
-
-
-
-
 
     // append text describing the drop down menu
     d3.select(videoPlayer)
@@ -212,9 +218,9 @@ function updateCircles() {
     // TO DO - color by radio buttons?
     var colorBy = ["Color", "Language", "Country", "Content rating"],
     j = 0;
+    var currentMode = 0;
 
-
-    // Create the shape selectors
+    // Radio buttons for colors
     var form = d3.select(videoPlayer).append("form");
 
     labels = form.selectAll("label")
@@ -227,7 +233,15 @@ function updateCircles() {
         .attr("class", "shape")
         .attr('name','mode')
         .attr("value", function(d, i) {return i;})
-        .property("checked", function(d, i) {return i===j;});
+        .property("checked", function(d, i) {return i===j;})
+        .on("change", function(){
+          console.log(this.value)
+          currentMode = this.value;
+          calculateInfo();
+          updateColorScale();
+          updateCircles();
+          updateLegend();
+        });
 
       // creates a drop-down menu to filter the movies by genre
       d3.select(videoPlayer)
@@ -316,8 +330,10 @@ function updateCircles() {
       });
 
     // initialize
-    updateCircles();
     calculateInfo();
+    updateColorScale();
+    updateCircles();
+    updateLegend();
 
     d3.select(videoPlayer)
         .append('g')
@@ -410,10 +426,13 @@ function updateCircles() {
         .map(data);
       console.log(moviesByIMDbScore);
 
-      var movieColor = moviesByColor["$" + year.toString()].keys();
+       movieColors = moviesByColor["$" + year.toString()].keys();
       var languages = moviesByLanguage["$" + year.toString()].keys();
       var countries = moviesByCountry["$" + year.toString()].keys();
       var contentRatings = moviesByContentRating["$" + year.toString()].keys();
+
+      modes = [movieColors, languages, countries, contentRatings];
+
 
       var IMDbScores = moviesByIMDbScore["$" + year.toString()].keys();
 
@@ -497,8 +516,6 @@ function updateCircles() {
       if (year < 2016) {
         forwardButton.style('display', 'block');
       }
-
-
     }
 
     var forwardButton = svg.append("g")
@@ -512,10 +529,12 @@ function updateCircles() {
       forwardButton.on("click", function(d,i){
         if (year < 2016) {
           fastForwardMovies();
+          calculateInfo();
+          updateColorScale();
           updateCircles();
+          updateLegend();
           updateTitle();
           clearText();
-          calculateInfo();
           addText();
         }
       });
@@ -531,12 +550,13 @@ function updateCircles() {
       rewindButton.on("click", function(d,i){
         if (year > 2010) {
           rewindMovies();
+          calculateInfo();
+          updateColorScale();
           updateCircles();
+          updateLegend();
           updateTitle();
           clearText();
-          calculateInfo();
           addText();
-
         }
       });
 
@@ -554,31 +574,35 @@ function updateCircles() {
       .text("Analyzing Movies: " + year);
 
 
+  function updateColorScale() {
+     colors = d3.scaleOrdinal().domain(modes[currentMode]).range(d3.schemeCategory10);
+  }
+
+  function updateLegend() {
+    var legends = d3.select("#legends").select("svg");
+
+    legends.style("float", "left")
+
+    legends.attr("width",'100%')
+    .attr("height",height)
+    legends.append("g")
+      .attr("id", "legendRatings")
+      .style('position', 'relative')
+      .style('left', '82px')
+      .style('bottom', '2px')
+
+    var legendElements = d3.legendColor()
+
+      .shapeWidth(100)
+      // .cells([1, 2, 3, 4, 5])
+      .orient('vertical')
+      .scale(colors);
+
+    legends.select("#legendRatings")
+      .call(legendElements);
 
 
-  var legends = d3.select("#legends").select("svg");
-  legends.style("float", "left")
-
-  legends.attr("width",'100%')
-  .attr("height",height)
-  legends.append("g")
-    .attr("id", "legendRatings")
-    .style('position', 'relative')
-    .style('left', '82px')
-    .style('bottom', '2px')
-
-  var legendRatings = d3.legendColor()
-
-    .shapeWidth(100)
-    // .cells([1, 2, 3, 4, 5])
-    .orient('vertical')
-    .scale(colors);
-
-  legends.select("#legendRatings")
-    .call(legendRatings);
-
-
-
+  }
 
 
   });
