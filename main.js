@@ -62,6 +62,8 @@ d3.csv("movies.csv",function(data) {
     d.aspect_ratio = +d.aspect_ratio,
     d.movie_facebook_likes = +d.movie_facebook_likes,
     d.radius = radiusScale(+d.imdb_score)
+    d.x = width /2;
+    d.y = height /2;
   });
   console.log(data[0]);
 
@@ -72,16 +74,24 @@ d3.csv("movies.csv",function(data) {
 
 
  let simulation = d3.forceSimulation()
-  .force("charge", d3.forceManyBody().strength(-1))
-  .alphaDecay(0)
-   // .force("x", d3.forceX(width).strength(forceStrength))
-   // .force("y", d3.forceY(height).strength(forceStrength))
-   .force("collide", d3.forceCollide(
-     function(d) {
-     // console.log("radius" + radiusScale(d.imdb_score));
-      return radiusScale(d.imdb_score);
-   })          // set your radius function
- );
+ .force("collide",d3.forceCollide( function(d){
+              	return d.radius}).iterations(16)
+            )
+            .force("charge", d3.forceManyBody())
+            .force("y", d3.forceY().y(height / 2))
+            .force("x", d3.forceX().x(width / 2))
+  // .force("charge", d3.forceManyBody().strength(-1))
+  // .alphaDecay(0)
+  //  // .force("x", d3.forceX(width).strength(forceStrength))
+  //  // .force("y", d3.forceY(height).strength(forceStrength))
+  //  .force("collide", d3.forceCollide(
+  //    function(d) {
+  //    // console.log("radius" + radiusScale(d.imdb_score));
+  //     return radiusScale(d.imdb_score);
+  //  })         
+ ;
+
+
 
 
 
