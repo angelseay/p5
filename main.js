@@ -74,22 +74,13 @@ d3.csv("movies.csv",function(data) {
 
 
  let simulation = d3.forceSimulation()
- .force("collide",d3.forceCollide( function(d){
-              	return d.radius}).iterations(16)
-            )
-            .force("charge", d3.forceManyBody())
-            .force("y", d3.forceY().y(height / 2))
-            .force("x", d3.forceX().x(width / 2))
-  // .force("charge", d3.forceManyBody().strength(-1))
-  // .alphaDecay(0)
-  //  // .force("x", d3.forceX(width).strength(forceStrength))
-  //  // .force("y", d3.forceY(height).strength(forceStrength))
-  //  .force("collide", d3.forceCollide(
-  //    function(d) {
-  //    // console.log("radius" + radiusScale(d.imdb_score));
-  //     return radiusScale(d.imdb_score);
-  //  })
- ;
+ .force("charge", d3.forceManyBody().strength(-1))
+ .alphaDecay(0)
+ .force("collide", d3.forceCollide(
+   function(d) {
+    return radiusScale(d.imdb_score);
+ })
+);
 
 
 
@@ -216,7 +207,7 @@ function updateCircles() {
     return d.title_year == year;
   })
   .attr("fill",function(d,i){
-    //  ignore movies with missing info 
+    //  ignore movies with missing info
     //  ignore movies with missing info
     if (d[currentAttribute] != "") {
       return colors(d[currentAttribute]);
