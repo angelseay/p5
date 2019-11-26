@@ -831,7 +831,7 @@ function updateCircles() {
     var legends = d3.select("#legends").select("svg");
 
     legends.attr("width",'500')
-    .attr("height", 500)
+    .attr("height", 300)
     .attr("transform", "translate(800, -795)")
     legends.append("g")
       .attr("id", "legendElements");
