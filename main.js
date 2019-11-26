@@ -241,26 +241,19 @@ function updateCircles() {
 
     var center = { x: width / 2, y: height / 2 };
 
-    // append text describing the drop down menu
-    d3.select(videoPlayer)
-        .append('g')
-        .append('text')
-        .text('Filter by Genre: ')
-        .style('position', 'relative')
-        .style('left', '80px');
-
     var genres = ["Action", "Adventure", "Animation", "Biography", "Comedy",
     "Crime", "Documentary", "Drama", "Family", "Fantasy", "Game-Show", "History",
     "Horror", "Music", "Musical", "Mystery", "Reality-TV", "Romance", "Sci-Fi",
     "Sport", "Thriller", "War", "Western"];
 
-    // TO DO - color by radio buttons?
     var colorBy = ["Color", "Language", "Country", "Content rating"],
     j = 0;
     var currentMode = 0;
 
     // Radio buttons for colors
-    var form = d3.select(videoPlayer).append("form");
+    var form = d3.select(videoPlayer).append("form")
+      .style('position', 'relative')
+      .style('top', '10px');
 
     labels = form.selectAll("label")
         .data(colorBy)
@@ -272,6 +265,7 @@ function updateCircles() {
         .attr("class", "shape")
         .attr('name','mode')
         .attr("value", function(d, i) {return i;})
+        .style('margin-right', '1em')
         .property("checked", function(d, i) {return i===j;})
         .on("change", function(){
           console.log(this.value)
@@ -282,6 +276,14 @@ function updateCircles() {
           updateLegend();
         });
 
+      // append text describing the drop down menu
+      d3.select(videoPlayer)
+        .append('g')
+        .append('text')
+        .text('Filter by Genre: ')
+        .style('position', 'relative')
+        .style('top', '378px');
+
       // creates a drop-down menu to filter the movies by genre
       d3.select(videoPlayer)
           .append('g')
@@ -291,8 +293,8 @@ function updateCircles() {
           .attr('size', 5)
           .style("border", "1px solid black")
           .style('position', 'relative')
-          .style('left', '82px')
-          .style('bottom', '2px')
+          .style('left', '10px')
+          .style('top', '377px')
           .selectAll('option')
           .data(genres)
           .enter()
@@ -310,8 +312,8 @@ function updateCircles() {
         .append('button')
         .style("border", "1px solid black")
         .style('position', 'relative')
-        .style('left', '90px')
-        .style('bottom', '4px')
+        .style('left', '25px')
+        .style('top', '375px')
         .text('Submit')
         .on('click', function() {
 
@@ -801,15 +803,11 @@ function updateCircles() {
   function updateLegend() {
     var legends = d3.select("#legends").select("svg");
 
-    legends.style("float", "left")
-
-    legends.attr("width",'100%')
-    .attr("height",height)
+    legends.attr("width",'400')
+    .attr("height", 500)
+    .attr("transform", "translate(800, -795)")
     legends.append("g")
-      .attr("id", "legendRatings")
-      .style('position', 'relative')
-      .style('left', '82px')
-      .style('bottom', '2px')
+      .attr("id", "legendRatings");
 
     var legendElements = d3.legendColor()
 
@@ -820,9 +818,6 @@ function updateCircles() {
 
     legends.select("#legendRatings")
       .call(legendElements);
-
-
   }
-
 
   });
