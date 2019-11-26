@@ -90,15 +90,42 @@ d3.csv("movies.csv",function(data) {
 var toolTip = d3.tip()
     .attr('class', 'd3-tip')
     .html(function (d) {
+      budget = d.budget;
+      budget = budget.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      // cleans up data values with zeros
+      if (budget == 0) {
+        budget = '';
+      }
+
+      duration = d.duration;
+
+      if (duration == 0) {
+        duration = '';
+      }
+
       var htmlString = `<h5>${d['movie_title']} (${d['title_year']})</h5>`;
       htmlString = htmlString + `<table>
         <tr><th>Rating: </th><td>${d['content_rating']}</td></tr>
-        <tr><th>Genres: </th><td>${d['genres']}</td></tr>
-        <tr><th>Duration: </th><td>${d['duration'] + ' min'}</td></tr>
-        <tr><th>IMDb Score: </th><td>${d['imdb_score']}</td></tr>
+        <tr><th>Genres: </th><td>${d['genres']}</td></tr>`;
+
+      if (duration == 0) {
+        htmlString += `<tr><th>Duration: </th><td>${duration}</td></tr>`;
+      } else {
+        htmlString += `<tr><th>Duration: </th><td>${duration + ' min'}</td></tr>`;
+      }
+
+      htmlString += `<tr><th>IMDb Score: </th><td>${d['imdb_score']}</td></tr>
         <tr><th>Director: </th><td>${d['director_name']}</td></tr>
         <tr><th>Actors: </th><td>${d['actor_1_name'] + ', ' + d['actor_2_name'] +
           ', ' + d['actor_3_name']}</td></tr>`;
+
+      if (budget == 0) {
+        htmlString += `<tr><th>Budget: </th><td>${budget}</td></tr>`;
+      } else {
+        htmlString += `<tr><th>Budget: </th><td>${'$' + budget}</td></tr>`;
+      }
+
       return htmlString;
     })
 
@@ -330,9 +357,13 @@ function updateCircles() {
     var percentChangeNum;
     var percentChangeDuration;
     var maxScore;
-    var scoreKeys;
+    var scoreMaxKeys;
+    var minScore;
+    var scoreMinKeys;
     var maxLikes;
     var likesKeys;
+    var maxGross;
+    var grossKeys;
 
     function calculateInfo() {
       numMovies = d3.nest()
@@ -370,7 +401,24 @@ function updateCircles() {
           return d3.mean(v, function(d) { return d.duration; })
         })
         .map(data);
-      console.log(moviesByDuration);
+
+      moviesByContentRating = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.content_rating; })
+        .rollup(function(v) { return v.length; })
+        .map(data);
+
+      moviesByTitleGross = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.gross; })
+        .key(function(d) { return d.movie_title; })
+        .map(data);
+
+      moviesByTitles = d3.nest()
+        .key(function(d) { return d.title_year; })
+        .key(function(d) { return d.movie_title; })
+        .map(data);
+      console.log(moviesByTitles);
 
       moviesByGross = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -378,14 +426,6 @@ function updateCircles() {
           return d3.mean(v, function(d) { return d.gross; })
         })
         .map(data);
-      console.log(moviesByGross);
-
-      moviesByContentRating = d3.nest()
-        .key(function(d) { return d.title_year; })
-        .key(function(d) { return d.content_rating; })
-        .rollup(function(v) { return v.length; })
-        .map(data);
-      console.log(moviesByContentRating);
 
       moviesByBudget = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -393,14 +433,12 @@ function updateCircles() {
           return d3.mean(v, function(d) { return d.budget; })
         })
         .map(data);
-      console.log(moviesByBudget);
 
       moviesByFacebookLikes = d3.nest()
         .key(function(d) { return d.title_year; })
         .key(function(d) { return d.movie_facebook_likes; })
         .key(function(d) { return d.movie_title; })
         .map(data);
-      console.log(moviesByFacebookLikes);
 
       moviesByIMDbScore = d3.nest()
         .key(function(d) { return d.title_year; })
@@ -415,15 +453,18 @@ function updateCircles() {
 
       var IMDbScores = moviesByIMDbScore["$" + year.toString()].keys();
       var facebookLikes = moviesByFacebookLikes["$" + year.toString()].keys();
+      var gross = moviesByTitleGross["$" + year.toString()].keys();
 
       // calculates percent of the movie market that the USA makes up
       percentMarket = Math.round(((moviesByCountry["$" + year.toString()]['$USA'])/
       (numMovies["$"+ year.toString()])) * 100);
 
-      // finds the movie with the highest IMDb score
-      outputScoresArr = findMax(IMDbScores, moviesByIMDbScore);
+      // finds the movie(s) with the highest and lowest IMDb scores
+      outputScoresArr = findExtremum(IMDbScores, moviesByIMDbScore);
       maxScore = outputScoresArr[0];
-      scoresKeys = outputScoresArr[1];
+      scoresMaxKeys = outputScoresArr[1];
+      minScore = outputScoresArr[2];
+      scoresMinKeys = outputScoresArr[3];
 
       // calculates percent change of the average duration of movies in each year
       if (year > 2010) {
@@ -433,10 +474,26 @@ function updateCircles() {
       }
 
       // finds the movie with the most Facebook likes
-      outputLikesArr = findMax(facebookLikes, moviesByFacebookLikes);
+      outputLikesArr = findExtremum(facebookLikes, moviesByFacebookLikes);
       maxLikes = outputLikesArr[0];
       maxLikes = maxLikes.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); // adds comma to number
       likesKeys = outputLikesArr[1];
+
+      // finds the movie with the highest gross
+      outputGrossArr = findExtremum(gross, moviesByTitleGross);
+      maxGross = outputGrossArr[0];
+      maxGross = maxGross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      grossKeys = outputGrossArr[1];
+
+      // calculates average gross and average budget
+      avgGross = Math.round(moviesByGross["$" + year.toString()]);
+      avgGross = avgGross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      avgBudget = Math.round(moviesByBudget["$" + year.toString()]);
+      avgBudget = avgBudget.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      differenceGross = outputGrossArr[0] - Math.round(moviesByGross["$" + year.toString()]);
+      differenceGross = differenceGross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     }
 
@@ -454,25 +511,90 @@ function updateCircles() {
       text.innerHTML += '. <p>USA was the top creator of movies, comprising '
         + percentMarket + '% of the market.</p>';
 
-      // avg. duration of movies
+      // average duration of movies
       text.innerHTML += 'The average duration of all the movies in ' + year +
       ' was ' + moviesByDuration["$" + year.toString()].toFixed(2);
 
       percentChangeText(percentChangeDuration);
 
-      // movie with highest IMDb score
-      if (scoresKeys.length == 1) {
-        text.innerHTML += '.<p><i>' + scoresKeys[0].trim()
-        + '</i> had the highest IMDb score with a ' + maxScore + '/10. </p>';
+      // movies with highest and lowest IMDb scores
+      if (scoresMaxKeys.length == 1) {
+        gross = moviesByTitles["$" + year.toString()]["$" + scoresMaxKeys[0]][0].gross;
+        grossFormatted = gross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        if (gross > 0) {
+          text.innerHTML += '.<p><i>' + scoresMaxKeys[0].trim()
+            + '</i> had the highest IMDb score with a ' + maxScore + '/10. It grossed $'
+            + grossFormatted + ' at the box office.</p>';
+        } else {
+          text.innerHTML += '.<p><i>' + scoresMaxKeys[0].trim()
+            + '</i> had the highest IMDb score with a ' + maxScore + '/10.</p>'
+        }
+
       } else {
-        text.innerHTML += '.<p>' +  scoresKeys.length + ' movies tied for the highest IMDb score '
-          + 'of ' + maxScore + '/10: <i>' + scoresKeys[0].trim() + '</i> and <i>'
-          + scoresKeys[1].trim() + '</i>.</p>';
+        movie1Gross = moviesByTitles["$" + year.toString()]["$" + scoresMaxKeys[0]][0].gross;
+        movie1GrossFormatted = movie1Gross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        movie2Gross = moviesByTitles["$" + year.toString()]["$" + scoresMaxKeys[1]][0].gross;
+        movie2GrossFormatted = movie2Gross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        if (movie1Gross && movie2Gross > 0) {
+          text.innerHTML += '.<p>' +  scoresMaxKeys.length + ' movies tied for the highest IMDb score '
+            + 'of ' + maxScore + '/10: <i>' + scoresMaxKeys[0].trim() + '</i> and <i>'
+            + scoresMaxKeys[1].trim() + '.</i><i></p><p>' + scoresMaxKeys[0].trim()
+            + '</i> grossed $' + movie1GrossFormatted + ', and <i>' + scoresMaxKeys[1].trim()
+            + '</i> grossed $' + movie2GrossFormatted + '.</p>';
+        } else {
+          text.innerHTML += '.<p>' +  scoresMaxKeys.length + ' movies tied for the highest IMDb score '
+            + 'of ' + maxScore + '/10: <i>' + scoresMaxKeys[0].trim() + '</i> and <i>'
+            + scoresMaxKeys[1].trim() + '.</i><i></p>';
+        }
+
+      }
+
+      minGross = moviesByTitles["$" + year.toString()]["$" + scoresMinKeys[0]][0].gross;
+      minGrossFormatted = minGross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      if (scoresMinKeys.length == 1) {
+        if (minGross > 0) {
+          text.innerHTML += '<p><i>' + scoresMinKeys[0].trim()
+            + '</i> had the lowest IMDb score with a ' + minScore + '/10. It grossed $'
+            + minGrossFormatted + ' at the box office.</p>';
+        } else {
+          text.innerHTML += '<p><i>' + scoresMinKeys[0].trim()
+            + '</i> had the lowest IMDb score with a ' + minScore + '/10. </p>';
+        }
+      } else {
+        text.innerHTML += '<p>' +  scoresMinKeys.length + ' movies tied for the lowest IMDb score '
+          + 'of ' + minScore + '/10: <i>' + scoresMinKeys[0].trim() + '</i> and <i>'
+          + scoresMinKeys[1].trim() + '</i>.</p>';
       }
 
       // movie with most likes on Facebook
-      text.innerHTML += '<p> On Facebook, <i>' + likesKeys[0].trim()
-      + '</i> garnered the most popularity with '+ maxLikes + ' likes. </p>';
+      likedGross = moviesByTitles["$" + year.toString()]["$" + likesKeys[0]][0].gross;
+      likedGross = likedGross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      if ((likesKeys[0].trim()) === (scoresMaxKeys[0].trim())) {
+        text.innerHTML += '<p> In addition to having the highest IMDb score, <i>'
+        + likesKeys[0].trim() + '</i> also garnered the most popularity on Facebook with '
+        + maxLikes + ' likes.</p>';
+      } else {
+        text.innerHTML += '<p> On Facebook, <i>' + likesKeys[0].trim()
+          + '</i> garnered the most popularity with '+ maxLikes + ' likes. It had a gross of $'
+          + likedGross + '.</p>';
+      }
+
+      // average gross and budget of the movies
+      text.innerHTML += '<p> For ' + year + ', the average gross was $' + avgGross
+      + '. The average budget was $' + avgBudget + '.<p>';
+
+      // movie with the highest gross
+      movieGenres = moviesByTitles["$" + year.toString()]["$" + grossKeys[0]][0].genres;
+
+      text.innerHTML += '<p> The highest grossing movie was <i>' + grossKeys[0].trim()
+      + '</i> with a gross of $'+ maxGross + ', which was $' + differenceGross
+      + ' above the average.</p><i>' +  grossKeys[0].trim() + '</i> falls under the genres of '
+      + movieGenres + '.<p>';
 
     }
 
@@ -488,24 +610,33 @@ function updateCircles() {
       }
     }
 
-    function findMax(array, movieCategory) {
+    function findExtremum(array, movieCategory) {
       output = [];
       max = 0;
+      min = 10;
 
       for (i = 0, length = array.length; i < length; i++) {
         score = array[i];
-        score = score * 1; // changes number to string
+        score = score * 1; // changes string to number
 
         if (score > max) {
           max = score;
-          movieArr = movieCategory["$" + year.toString()]["$" + max.toString()];
+          movieMaxArr = movieCategory["$" + year.toString()]["$" + max.toString()];
+        }
+
+        if (score < min) {
+          min = score;
+          movieMinArr = movieCategory["$" + year.toString()]["$" + min.toString()];
         }
       }
 
-      keys = movieArr.keys();
+      keysMax = movieMaxArr.keys();
+      keysMin = movieMinArr.keys();
 
       output[0] = max;
-      output[1] = keys;
+      output[1] = keysMax;
+      output[2] = min;
+      output[3] = keysMin;
 
       return output;
     }
