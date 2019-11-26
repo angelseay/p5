@@ -88,7 +88,7 @@ d3.csv("movies.csv",function(data) {
   //    function(d) {
   //    // console.log("radius" + radiusScale(d.imdb_score));
   //     return radiusScale(d.imdb_score);
-  //  })         
+  //  })
  ;
 
 
@@ -155,7 +155,9 @@ var movies = svg.selectAll('circle')
    .on("zoom", function() {
      movies.attr("transform", d3.event.transform);
    });
- svg.call(_zoom);
+ svg
+ .call(_zoom)
+ .call(_zoom.transform, d3.zoomIdentity.translate(350, 250).scale(0.08));
 
  function phyllotaxis(radius) {
    var theta = Math.PI * (3 - Math.sqrt(5));
