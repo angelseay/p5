@@ -190,7 +190,7 @@ function updateTitle() {
 
 // this is the default for how we'll color the circles
 var movieColors =
-    ["Color", " Black and White", ""];
+    ["Color", " Black and White"];
 
 var colors = d3.scaleOrdinal().domain(movieColors).range(d3.schemeCategory10);
 
@@ -216,10 +216,17 @@ function updateCircles() {
     return d.title_year == year;
   })
   .attr("fill",function(d,i){
-    return colors(d[currentAttribute]);
-
+    //  ignore movies with missing info 
+    if (d[currentAttribute] != "") {
+      return colors(d[currentAttribute]);
+    }
   })
-  .attr('stroke', function (d, i) { return d3.rgb(colors(d[currentAttribute])).darker(); })
+  .attr('stroke', function (d, i) {
+    //  ignore movies with missing info
+    if (d[currentAttribute] != "") {
+      return d3.rgb(colors(d[currentAttribute])).darker();
+    }
+  })
   .attr('r', function(d) {
     return d.radius;
   })
@@ -475,11 +482,28 @@ function updateCircles() {
         .key(function(d) { return d.movie_title; })
         .map(data);
 
-       movieColors = moviesByColor["$" + year.toString()].keys();
+      // set up legend element keys
+      movieColors = moviesByColor["$" + year.toString()].keys();
       var languages = moviesByLanguage["$" + year.toString()].keys();
       var countries = moviesByCountry["$" + year.toString()].keys();
       var contentRatings = moviesByContentRating["$" + year.toString()].keys();
 
+      // hide legend elements that have the key ""
+      movieColors = movieColors.filter(function(d) {
+        return d != "";
+      })
+      languages = languages.filter(function(d) {
+        return d != "";
+      })
+      countries = countries.filter(function(d) {
+        return d != "";
+      })
+
+      contentRatings = contentRatings.filter(function(d) {
+        return d != "";
+      })
+
+      // update modes
       modes = [movieColors, languages, countries, contentRatings];
 
 
@@ -798,6 +822,7 @@ function updateCircles() {
 
   function updateColorScale() {
      colors = d3.scaleOrdinal().domain(modes[currentMode]).range(d3.schemeCategory10);
+     console.log(modes[currentMode])
   }
 
   function updateLegend() {
@@ -807,16 +832,15 @@ function updateCircles() {
     .attr("height", 500)
     .attr("transform", "translate(800, -795)")
     legends.append("g")
-      .attr("id", "legendRatings");
+      .attr("id", "legendElements");
 
     var legendElements = d3.legendColor()
-
       .shapeWidth(100)
       // .cells([1, 2, 3, 4, 5])
       .orient('vertical')
       .scale(colors);
 
-    legends.select("#legendRatings")
+    legends.select("#legendElements")
       .call(legendElements);
   }
 
