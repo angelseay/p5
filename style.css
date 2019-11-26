@@ -1,5 +1,12 @@
 body {
-  font-family: 'Roboto';
+  font-family: 'Source Sans Pro', sans-serif;
+
+}
+
+
+
+#title {
+  font-weight: bold;
 }
 .d3-tip {
   line-height: 1;
@@ -9,6 +16,7 @@ body {
   border-radius: 4px;
   font-size: 12px;
 }
+
 
 /* Creates a small triangle extender for the tooltip */
 .d3-tip:after {

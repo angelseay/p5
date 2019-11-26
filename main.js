@@ -161,7 +161,7 @@ var movies = svg.selectAll('circle')
      };
    };
  }
- var gui = d3.select("#videoPlayer");
+ var gui = d3.select("#legends");
  gui.append("span")
    .classed("zoom in", true)
    .text("+")
@@ -250,9 +250,10 @@ function updateCircles() {
     var currentMode = 0;
 
     // Radio buttons for colors
-    var form = d3.select(videoPlayer).append("form")
-      .style('position', 'relative')
-      .style('top', '10px');
+    var form = d3.select("#legends").append("form")
+    .style('position', 'relative')
+    .style('left', '10px')
+    .style('top', '-500px')
 
     labels = form.selectAll("label")
         .data(colorBy)
@@ -276,15 +277,16 @@ function updateCircles() {
         });
 
       // append text describing the drop down menu
-      d3.select(videoPlayer)
+      d3.select("#legends")
         .append('g')
         .append('text')
         .text('Filter by Genre: ')
         .style('position', 'relative')
-        .style('top', '378px');
+        .style('left', '300px')
+        .style('top', '-550px');
 
       // creates a drop-down menu to filter the movies by genre
-      d3.select(videoPlayer)
+      d3.select("#legends")
           .append('g')
           .append('select')
           .attr('id', 'drop-down')
@@ -306,14 +308,14 @@ function updateCircles() {
           });
 
     // creates a 'filter' button
-    d3.select(videoPlayer)
+    d3.select("#legends")
         .append('g')
         .append('button')
         .style("border", "1px solid black")
         .style('position', 'relative')
         .style('left', '25px')
         .style('top', '375px')
-        .text('Submit')
+        .text('Filter')
         .on('click', function() {
 
             var menu = document.getElementById('drop-down');
@@ -375,11 +377,10 @@ function updateCircles() {
     updateCircles();
     updateLegend();
 
-    d3.select(videoPlayer)
+    d3.select("#story")
         .append('g')
         .append('text')
         .attr('id', 'text')
-        .style('float', 'left');
 
     addText();
 
@@ -549,7 +550,7 @@ function updateCircles() {
       var text = document.getElementById('text');
 
       // number of movies
-      text.innerHTML = '<p><b>Year At a Glance</b><p>'
+      text.innerHTML = '<h2>Year At a Glance</h2>'
       text.innerHTML += 'There were ' + numMovies["$"+ year.toString()] +
       ' movies made in ' + year;
 
@@ -831,10 +832,14 @@ function updateCircles() {
     var legends = d3.select("#legends").select("svg");
 
     legends.attr("width",'400')
-    .attr("height", 500)
-    .attr("transform", "translate(800, -795)")
+    .attr("height", '500')
+    .style('position', 'relative')
+    .style('left', '10px')
+    .style('top', '40px')
+    // .attr("transform", "translate(800, -795)")
     legends.append("g")
-      .attr("id", "legendElements");
+      .attr("id", "legendElements")
+
 
     var legendElements = d3.legendColor()
       .shapeWidth(100)
