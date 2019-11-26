@@ -217,6 +217,7 @@ function updateCircles() {
   })
   .attr("fill",function(d,i){
     //  ignore movies with missing info 
+    //  ignore movies with missing info
     if (d[currentAttribute] != "") {
       return colors(d[currentAttribute]);
     }
@@ -563,9 +564,19 @@ function updateCircles() {
 
       percentChangeText(percentChangeNum);
 
+      text.innerHTML += '.<p></p>USA was the top creator of movies';
+
       // movies by country
-      text.innerHTML += '. <p>USA was the top creator of movies, comprising '
-        + percentMarket + '% of the market.</p>';
+      if (year == 2011) {
+        text.innerHTML += ' for the 2nd year in a row';
+      } else if (year == 2012) {
+        text.innerHTML += ' for the 3rd year in a row';
+      } else if (year > 2012 ){
+        yearStr = year.toString();
+        text.innerHTML += ' for the ' + (yearStr[3] * 1 + 1) + 'th year in a row';
+      }
+
+      text.innerHTML += ', comprising ' + percentMarket + '% of the market.</p>';
 
       // average duration of movies
       text.innerHTML += 'The average duration of all the movies in ' + year +
