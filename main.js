@@ -389,8 +389,10 @@ function updateCircles() {
         .append('g')
         .append('text')
         .attr('id', 'text')
-        // .style('position', 'relative')
-        // .style('left', '5px')
+        .style('position', 'absolute')
+        .style('top', '0px')
+        .style('right', '0px')
+        .style('width', '450px');
 
     addText();
 
