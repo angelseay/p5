@@ -1,7 +1,6 @@
 var width = 800;
 var height= 500;
 
-
 var maxAmount = 10;
 // defines the maximum values (domain) and maximum radius values (range) for our cirlces
 
@@ -257,9 +256,9 @@ function updateCircles() {
 
     // Radio buttons for colors
     var form = d3.select("#legends").append("form")
-    .style('position', 'relative')
-    .style('left', '10px')
-    .style('top', '-500px')
+      .style('position', 'relative')
+      .style('left', '10px')
+      .style('top', '-500px')
 
     labels = form.selectAll("label")
         .data(colorBy)
@@ -555,7 +554,6 @@ function updateCircles() {
 
       differenceGross = outputGrossArr[0] - Math.round(moviesByGross["$" + year.toString()]);
       differenceGross = differenceGross.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
     }
 
     function addText() {
@@ -563,8 +561,8 @@ function updateCircles() {
 
       // number of movies
       text.innerHTML = '<h2>Year At a Glance</h2>'
-      text.innerHTML += 'There were ' + numMovies["$"+ year.toString()] +
-      ' movies made in ' + year;
+      text.innerHTML += 'There were ' + numMovies["$"+ year.toString()]
+        + ' movies made in ' + year;
 
       percentChangeText(percentChangeNum);
 
@@ -583,8 +581,8 @@ function updateCircles() {
       text.innerHTML += ', comprising ' + percentMarket + '% of the market.</p>';
 
       // average duration of movies
-      text.innerHTML += 'The average duration of all the movies in ' + year +
-      ' was ' + moviesByDuration["$" + year.toString()].toFixed(2);
+      text.innerHTML += 'The average duration of all the movies in ' + year
+        + ' was ' + moviesByDuration["$" + year.toString()].toFixed(2);
 
       percentChangeText(percentChangeDuration);
 
@@ -670,15 +668,15 @@ function updateCircles() {
 
       // average gross and budget of the movies
       text.innerHTML += '<p> For ' + year + ', the average gross was $' + avgGross
-      + '. The average budget was $' + avgBudget + '.<p>';
+        + '. The average budget was $' + avgBudget + '.<p>';
 
       // movie with the highest gross
       movieGenres = moviesByTitles["$" + year.toString()]["$" + grossKeys[0]][0].genres;
 
       text.innerHTML += '<p> The highest grossing movie was <i>' + grossKeys[0].trim()
-      + '</i> with a gross of $'+ maxGross + ', which was $' + differenceGross
-      + ' above the average.</p><i>' +  grossKeys[0].trim() + '</i> falls under the genres of '
-      + movieGenres + '.<p>';
+        + '</i> with a gross of $'+ maxGross + ', which was $' + differenceGross
+        + ' above the average.</p><i>' +  grossKeys[0].trim() + '</i> falls under the genres of '
+        + movieGenres + '.<p>';
 
     }
 
@@ -846,11 +844,10 @@ function updateCircles() {
     var legends = d3.select("#legends").select("svg");
 
     legends.attr("width",'500')
-    .attr("height", '500')
-    .style('position', 'relative')
-    .style('left', '10px')
-    .style('top', '40px')
-    // .attr("transform", "translate(800, -795)")
+      .attr("height", '500')
+      .style('position', 'relative')
+      .style('left', '10px')
+      .style('top', '40px')
     legends.append("g")
       .attr("id", "legendElements");
 
