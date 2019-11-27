@@ -335,16 +335,10 @@ function updateCircles() {
             // hides movies whose genre does not match the selected genre
             movies.selectAll('circle')
                 .filter(function (d) {
-                    var boolean = true;
-                    for (var i = 0; i < genre.length; i++) {
+                    val = filterGenre(d.genres, genre);
 
-                      if ((d.genres.includes(genre[i])) == false) {
-                        boolean = false;
-                        break;
-                      }
-                    }
-
-                    if (boolean == false) {
+                    if (val === false) {
+                      console.log(d.genres);
                       return d.genres;
                     }
                 })
@@ -356,16 +350,10 @@ function updateCircles() {
             // shows all movies whose genre match the selected genre
             movies.selectAll('circle')
                 .filter(function (d) {
-                  var boolean = true;
-                  for (var i = 0; i < genre.length; i++) {
+                  val = filterGenre(d.genres, genre);
 
-                      if ((d.genres.includes(genre[i])) == false) {
-                        boolean = false;
-                        break;
-                      }
-                  }
-
-                  if (boolean == true) {
+                  if (val === true) {
+                      console.log(d.genres);
                       return d.genres;
                   }
                 })
@@ -377,6 +365,20 @@ function updateCircles() {
                 });
       });
 
+    function filterGenre(genres, selected) {
+      var boolean = false;
+
+      for (var i = 0; i < selected.length; i++) {
+
+        if ((genres.includes(selected[i])) === true) {
+          boolean = true;
+          break;
+        }
+      }
+
+      return boolean;
+    }
+
     // initialize
     calculateInfo();
     updateColorScale();
@@ -387,6 +389,8 @@ function updateCircles() {
         .append('g')
         .append('text')
         .attr('id', 'text')
+        // .style('position', 'relative')
+        // .style('left', '5px')
 
     addText();
 
