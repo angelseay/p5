@@ -391,8 +391,8 @@ function updateCircles() {
         .attr('id', 'text')
         .style('position', 'absolute')
         .style('top', '0px')
-        .style('right', '0px')
-        .style('width', '450px');
+        .style('right', '3px')
+        .style('width', '440px');
 
     addText();
 
