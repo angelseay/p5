@@ -169,7 +169,7 @@ var movies = svg.selectAll('circle')
      _zoom.scaleBy(svg, 2);
    })
    .style('position', 'relative')
-   .style('left', '-20px')
+   .style('left', '-100px')
    .style('top', '-500px')
  gui.append("span")
    .classed("zoom out", true)
@@ -178,7 +178,7 @@ var movies = svg.selectAll('circle')
      _zoom.scaleBy(svg, 0.5);
    })
    .style('position', 'relative')
-   .style('left', '-20px')
+   .style('left', '-100px')
    .style('top', '-500px')
 
 function updateTitle() {
@@ -289,7 +289,7 @@ function updateCircles() {
         .text('Filter by Genre: ')
         .style('position', 'relative')
         .style('left', '500px')
-        .style('top', '-572px');
+        .style('top', '-592px');
 
       // creates a drop-down menu to filter the movies by genre
       d3.select("#legends")
@@ -320,7 +320,7 @@ function updateCircles() {
         .style("border", "1px solid black")
         .style('position', 'relative')
         .style('left', '520px')
-        .style('top', '-520px')
+        .style('top', '-590px')
         .text('Filter')
         .on('click', function() {
 
@@ -837,12 +837,12 @@ function updateCircles() {
   function updateLegend() {
     var legends = d3.select("#legends").select("svg");
 
-    legends.attr("width",'400')
+    legends.attr("width",'500')
     .attr("height", '500')
-  .style('position', 'relative')
-  .style('left', '10px')
-  .style('top', '40px')
-  // .attr("transform", "translate(800, -795)")
+    .style('position', 'relative')
+    .style('left', '10px')
+    .style('top', '40px')
+    // .attr("transform", "translate(800, -795)")
     legends.append("g")
       .attr("id", "legendElements");
 
