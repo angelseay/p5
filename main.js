@@ -141,17 +141,6 @@ var movies = svg.selectAll('circle')
  .call(_zoom)
  .call(_zoom.transform, d3.zoomIdentity.translate(350, 250).scale(0.08));
 
- function phyllotaxis(radius) {
-   var theta = Math.PI * (3 - Math.sqrt(5));
-   return function(i) {
-     var r = radius * Math.sqrt(i),
-       a = theta * i;
-     return {
-       x: width / 2 + r * Math.cos(a),
-       y: height / 2 + r * Math.sin(a)
-     };
-   };
- }
  var gui = d3.select("#legends");
  gui.append("span")
    .classed("zoom in", true)
@@ -778,6 +767,10 @@ function updateCircles() {
         .style("fill", "white");
       forwardButton.on("click", function(d,i){
         if (year < 2016) {
+          var menu = document.getElementById('drop-down')
+          for (var i = 0; i < menu.length; i++) {
+            menu.options[i].selected = false;
+          }
           fastForwardMovies();
           calculateInfo();
           updateColorScale();
@@ -799,6 +792,10 @@ function updateCircles() {
         .style("fill", "white");
       rewindButton.on("click", function(d,i){
         if (year > 2010) {
+          var menu = document.getElementById('drop-down');
+          for (var i = 0; i < menu.length; i++) {
+            menu.options[i].selected = false;
+          }
           rewindMovies();
           calculateInfo();
           updateColorScale();
