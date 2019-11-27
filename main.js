@@ -839,6 +839,8 @@ function updateCircles() {
   }
 
   function updateLegend() {
+    d3.selectAll('.cell').remove(); // clears previous cells
+
     var legends = d3.select("#legends").select("svg");
 
     legends.attr("width",'500')
