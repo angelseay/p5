@@ -13,6 +13,15 @@ body {
   font-size: 14px;
 }
 
+button {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+}
+
+select {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+}
 
 .d3-tip {
   line-height: 1;

@@ -288,8 +288,8 @@ function updateCircles() {
         .append('text')
         .text('Filter by Genre: ')
         .style('position', 'relative')
-        .style('left', '500px')
-        .style('top', '-592px');
+        .style('left', '495px')
+        .style('top', '-599px');
 
       // creates a drop-down menu to filter the movies by genre
       d3.select("#legends")
@@ -319,8 +319,8 @@ function updateCircles() {
         .append('button')
         .style("border", "1px solid black")
         .style('position', 'relative')
-        .style('left', '520px')
-        .style('top', '-590px')
+        .style('left', '510px')
+        .style('top', '-596px')
         .text('Filter')
         .on('click', function() {
 
