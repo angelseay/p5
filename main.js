@@ -167,13 +167,19 @@ var movies = svg.selectAll('circle')
    .text("+")
    .on("click", function() {
      _zoom.scaleBy(svg, 2);
-   });
+   })
+   .style('position', 'relative')
+   .style('left', '-20px')
+   .style('top', '-500px')
  gui.append("span")
    .classed("zoom out", true)
    .text("-")
    .on("click", function() {
      _zoom.scaleBy(svg, 0.5);
    })
+   .style('position', 'relative')
+   .style('left', '-20px')
+   .style('top', '-500px')
 
 function updateTitle() {
   d3.select("#title").text("Analyzing Movies: " + year);
