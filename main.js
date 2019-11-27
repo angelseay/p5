@@ -90,27 +90,16 @@ d3.csv("movies.csv",function(data) {
 var toolTip = d3.tip()
     .attr('class', 'd3-tip')
     .html(function (d) {
-      budget = d.budget;
-      budget = budget.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-      // cleans up data values with zeros
-      if (budget == 0) {
-        budget = '';
-      }
-
-      duration = d.duration;
-
-      if (duration == 0) {
-        duration = '';
-      }
-
+      // creates table with data values and cleans up data with zeros
       var htmlString = `<h5>${d['movie_title']} (${d['title_year']})</h5>`;
       htmlString = htmlString + `<table>
         <tr><th>Rating: </th><td>${d['content_rating']}</td></tr>
         <tr><th>Genres: </th><td>${d['genres']}</td></tr>`;
 
+      duration = d.duration;
       if (duration == 0) {
-        htmlString += `<tr><th>Duration: </th><td>${duration}</td></tr>`;
+        htmlString += `<tr><th>Duration: </th><td>${''}</td></tr>`;
       } else {
         htmlString += `<tr><th>Duration: </th><td>${duration + ' min'}</td></tr>`;
       }
@@ -120,8 +109,11 @@ var toolTip = d3.tip()
         <tr><th>Actors: </th><td>${d['actor_1_name'] + ', ' + d['actor_2_name'] +
           ', ' + d['actor_3_name']}</td></tr>`;
 
+      budget = d.budget;
+      budget = budget.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
       if (budget == 0) {
-        htmlString += `<tr><th>Budget: </th><td>${budget}</td></tr>`;
+        htmlString += `<tr><th>Budget: </th><td>${''}</td></tr>`;
       } else {
         htmlString += `<tr><th>Budget: </th><td>${'$' + budget}</td></tr>`;
       }
@@ -212,7 +204,6 @@ function updateCircles() {
     return d.title_year == year;
   })
   .attr("fill",function(d,i){
-    //  ignore movies with missing info
     //  ignore movies with missing info
     if (d[currentAttribute] != "") {
       return colors(d[currentAttribute]);
